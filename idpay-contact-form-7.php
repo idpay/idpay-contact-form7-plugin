@@ -26,7 +26,7 @@ function idpay_contact_form_7_load_textdomain() {
 
 add_action( 'init', 'idpay_contact_form_7_load_textdomain' );
 
-include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
 	Init::call_services();
 }

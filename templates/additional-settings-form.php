@@ -13,10 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     <table>
         <tr>
             <td><?php _e( 'Predefined amount', 'idpay-contact-form-7' ) ?></td>
-            <td><input type='text' name='idpay_amount'
-                       value='<?php echo $amount ?>'>
-            </td>
-            <td><?php _e( 'Rial', 'idpay-contact-form-7' ) ?></td>
+            <td><input type='text' name='idpay_amount' value='<?php echo $amount ?>'></td>
+            <td><?php _e( $currency == 'rial' ? 'Rial' : 'Toman', 'idpay-contact-form-7' ) ?></td>
         </tr>
     </table>
 
@@ -31,35 +29,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 
     <table class="widefat">
         <thead>
-        <tr>
-            <th><?php _e( 'Field', 'idpay-contact-form-7' ) ?></th>
-            <th><?php _e( 'Description', 'idpay-contact-form-7' ) ?></th>
-            <th><?php _e( 'Example', 'idpay-contact-form-7' ) ?></th>
-        </tr>
+            <tr>
+                <th><?php _e( 'Field', 'idpay-contact-form-7' ) ?></th>
+                <th><?php _e( 'Description', 'idpay-contact-form-7' ) ?></th>
+                <th><?php _e( 'Example', 'idpay-contact-form-7' ) ?></th>
+            </tr>
         </thead>
 
         <tbody>
-        <tr>
-            <td>idpay_amount</td>
-            <td><?php _e( 'An arbitrary amount', 'idpay-contact-form-7' ) ?></td>
-            <td><code>[text idpay_amount]</code>
-            </td>
-        </tr>
-        <tr>
-            <td>idpay_description</td>
-            <td><?php _e( 'Payment description', 'idpay-contact-form-7' ) ?></td>
-            <td><code>[text idpay_description]</code></td>
-        </tr>
-        <tr>
-            <td>idpay_phone</td>
-            <td><?php _e( 'Phone number field', 'idpay-contact-form-7' ) ?></td>
-            <td><code>[text idpay_phone]</code>
-            </td>
-        </tr>
-
+            <tr>
+                <td>idpay_amount</td>
+                <td><?php _e( 'An arbitrary amount', 'idpay-contact-form-7' ) ?></td>
+                <td><code>[text idpay_amount]</code></td>
+            </tr>
+            <tr>
+                <td>idpay_description</td>
+                <td><?php _e( 'Payment description', 'idpay-contact-form-7' ) ?></td>
+                <td><code>[text idpay_description]</code></td>
+            </tr>
+            <tr>
+                <td>idpay_phone</td>
+                <td><?php _e( 'Phone number field', 'idpay-contact-form-7' ) ?></td>
+                <td><code>[text idpay_phone]</code></td>
+            </tr>
+            <tr>
+                <td>your-email</td>
+                <td><?php _e( 'Email field', 'idpay-contact-form-7' ) ?></td>
+                <td><code>[email your-email]</code></td>
+            </tr>
+            <tr>
+                <td>your-name</td>
+                <td><?php _e( 'User\'s name field', 'idpay-contact-form-7' ) ?></td>
+                <td><code>[text your-name]</code></td>
+            </tr>
         </tbody>
-
     </table>
     <input type='hidden' name='post' value='<?php echo $post_id ?>'>
-
 </form>

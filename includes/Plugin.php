@@ -40,9 +40,10 @@ class Plugin {
 			email VARCHAR(255) NULL,
 			created_at bigint(11) DEFAULT '0' NOT NULL,
 			status VARCHAR(255) NOT NULL,
+			log longtext,
 			PRIMARY KEY id (id)
 		);";
-			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			dbDelta( $sql );
 		}
 
@@ -67,8 +68,11 @@ class Plugin {
 
 		$idpay_cf7_options = array(
 			'api_key' => '',
-			'return'  => '',
+			'return' => '',
 			'sandbox' => '1',
+			'currency' => 'rial',
+			'success_message' => __( 'Your payment has been successfully completed. Tracking code: {track_id}', 'idpay-contact-form-7' ),
+			'failed_message' => __( 'Your payment has failed. Please try again or contact the site administrator in case of a problem.', 'idpay-contact-form-7' ),
 		);
 
 		add_option( "idpay_cf7_options", $idpay_cf7_options );
@@ -85,49 +89,29 @@ class Plugin {
 			file_put_contents( ABSPATH . $slash . "wp-config.php", $config );
 		}
 
+        function return_error() {
+            ob_start();
+            ?>
+            <div class="error">
+                <p><?php _e( 'wp-config.php is not writable, please make wp-config.php writable - set it to 0777 temporarily, then set back to its original setting after this plugin has been deactivated.', 'idpay-contact-form-7' ); ?></p>
+            </div>
+            <button onclick="goBack()">Go Back and try again</button>
+            <script>
+                function goBack() {
+                    window.history.back();
+                }
+            </script>
+            <?php
+            return ob_get_clean();
+        }
+
 		if ( file_exists( ABSPATH . "wp-config.php" ) && is_writable( ABSPATH . "wp-config.php" ) ) {
 			wp_config_delete();
 		} else if ( file_exists( dirname( ABSPATH ) . "/wp-config.php" ) && is_writable( dirname( ABSPATH ) . "/wp-config.php" ) ) {
 			wp_config_delete( '/' );
-		} else if ( file_exists( ABSPATH . "wp-config.php" ) && ! is_writable( ABSPATH . "wp-config.php" ) ) {
-			?>
-            <div class="error">
-                <p><?php _e( 'wp-config.php is not writable, please make wp-config.php writable - set it to 0777 temporarily, then set back to its original setting after this plugin has been deactivated.', 'idpay-contact-form-7' ); ?></p>
-            </div>
-            <button onclick="goBack()">Go Back and try again</button>
-            <script>
-              function goBack() {
-                window.history.back();
-              }
-            </script>
-			<?php
-			exit;
-		} else if ( file_exists( dirname( ABSPATH ) . "/wp-config.php" ) && ! is_writable( dirname( ABSPATH ) . "/wp-config.php" ) ) {
-			?>
-            <div class="error">
-                <p><?php _e( 'wp-config.php is not writable, please make wp-config.php writable - set it to 0777 temporarily, then set back to its original setting after this plugin has been deactivated.', 'idpay-contact-form-7' ); ?></p>
-            </div>
-            <button onclick="goBack()">Go Back and try again</button>
-            <script>
-              function goBack() {
-                window.history.back();
-              }
-            </script>
-			<?php
-			exit;
 		} else {
-			?>
-            <div class="error">
-                <p><?php _e( 'wp-config.php is not writable, please make wp-config.php writable - set it to 0777 temporarily, then set back to its original setting after this plugin has been deactivated.', 'idpay-contact-form-7' ); ?></p>
-            </div>
-            <button onclick="goBack()">Go Back and try again</button>
-            <script>
-              function goBack() {
-                window.history.back();
-              }
-            </script>
-			<?php
-			exit;
+            print return_error();
+            exit;
 		}
 
 		delete_option( "idpay_cf7_options" );

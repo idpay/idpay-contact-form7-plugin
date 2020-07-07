@@ -41,11 +41,9 @@ class AdditionalSettingsForm implements ServiceInterface {
 		$post_id = sanitize_text_field( $_GET['post'] );
 		$enable  = get_post_meta( $post_id, "_idpay_cf7_enable", TRUE );
 		$amount  = get_post_meta( $post_id, "_idpay_cf7_amount", TRUE );
-		if ( $enable == "1" ) {
-			$checked = "CHECKED";
-		} else {
-			$checked = "";
-		}
+		$checked = $enable == "1" ? "CHECKED" : "";
+		$options = get_option( 'idpay_cf7_options' );
+		$currency = $options['currency'];
 
 		require_once( CF7_IDPAY_PLUGIN_PATH . 'templates/additional-settings-form.php' );
 	}
@@ -67,6 +65,24 @@ class AdditionalSettingsForm implements ServiceInterface {
 		}
 		$amount = sanitize_text_field( $_POST['idpay_amount'] );
 		update_post_meta( $post_id, "_idpay_cf7_amount", $amount );
+
+		if ( $amount !== "" ) {
+			$post_content = get_post_meta( $post_id, '_form', TRUE );
+			$match = [];
+			preg_match_all('/(idpay_amount){1}(.*)(]){1}/', $post_content, $match);
+			if(!empty($match) && !empty($match[0])){
+				foreach($match[0] as $str){
+					$post_content = get_post_meta( $post_id, '_form', TRUE );
+					$parts = explode($str, $post_content);
+					$post_content = implode('idpay_amount readonly default:post_meta "'. $amount .'"]', $parts);
+					update_post_meta( $post_id, "_form", $post_content );
+				}
+				$post_content = get_post_meta( $post_id, '_form', TRUE );
+//			echo '<pre>';
+//			print_r($post_content);
+//			die();
+			}
+		}
 	}
 
 	/**
@@ -90,5 +106,4 @@ class AdditionalSettingsForm implements ServiceInterface {
 
 		return $panels;
 	}
-
 }

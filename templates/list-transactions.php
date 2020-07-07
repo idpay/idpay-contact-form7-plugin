@@ -10,7 +10,7 @@ if ( ! current_user_can( "manage_options" ) ) {
 
 global $wpdb;
 $pagenum    = isset( $_GET['pagenum'] ) ? absint( $_GET['pagenum'] ) : 1;
-$limit      = 6;
+$limit      = 10;
 $offset     = ( $pagenum - 1 ) * $limit;
 $table_name = $wpdb->prefix . "cf7_transactions";
 
@@ -18,6 +18,8 @@ $transactions = $wpdb->get_results( "SELECT * FROM $table_name  ORDER BY $table_
 $total        = $wpdb->get_var( "SELECT COUNT($table_name.id) FROM $table_name" );
 $num_of_pages = ceil( $total / $limit );
 $cntx         = 0;
+$options = get_option( 'idpay_cf7_options' );
+$currency = $options['currency'];
 ?>
 <div class="wrap">
     <h2><?php _e( 'Forms Transactions', 'idpay-contact-form-7' ) ?></h2>
@@ -31,6 +33,7 @@ $cntx         = 0;
             <th><?php _e( 'Transaction ID', 'idpay-contact-form-7' ) ?></th>
             <th><?php _e( 'Tracking Code', 'idpay-contact-form-7' ) ?></th>
             <th><?php _e( 'Payment Status', 'idpay-contact-form-7' ) ?></th>
+            <th><?php _e( 'Payment Log', 'idpay-contact-form-7' ) ?></th>
         </tr>
         </thead>
         <tfoot>
@@ -42,6 +45,7 @@ $cntx         = 0;
             <th><?php _e( 'Transaction ID', 'idpay-contact-form-7' ) ?></th>
             <th><?php _e( 'Tracking Code', 'idpay-contact-form-7' ) ?></th>
             <th><?php _e( 'Payment Status', 'idpay-contact-form-7' ) ?></th>
+            <th><?php _e( 'Payment Log', 'idpay-contact-form-7' ) ?></th>
         </tr>
         </tfoot>
         <tbody>
@@ -63,7 +67,12 @@ $cntx         = 0;
                     </td>
 
                     <td> <?php echo $transaction['email'] ?></td>
-                    <td> <?php echo $transaction['amount'] . " " ?><?php _e( 'Rial', 'idpay-contact-form-7' ) ?></td>
+                    <td>
+                        <?php
+                        echo ($currency == 'rial' ? $transaction['amount'] : $transaction['amount'] / 10) . " ";
+                        _e( $currency == 'rial' ? 'Rial' : 'Toman', 'idpay-contact-form-7' );
+                        ?>
+                    </td>
                     <td> <?php echo $transaction['trans_id'] ?></td>
                     <td> <?php echo $transaction['track_id'] ?></td>
                     <td>
@@ -75,6 +84,7 @@ $cntx         = 0;
                             <b style="color: #ff8f00"><?php _e( 'pending payment', 'idpay-contact-form-7' ) ?></b>
 						<?php endif; ?>
                     </td>
+                    <td> <?php echo $transaction['log'] ?></td>
                 </tr>
 			<?php
 			endforeach;
