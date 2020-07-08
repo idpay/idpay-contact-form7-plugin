@@ -32,7 +32,7 @@ class Payment implements ServiceInterface {
 	 *   the contact form's data which is submitted.
 	 */
 	public function after_send_mail( $cf7 ) {
-
+		global $wpdb;
 		global $postid;
 		$postid = $cf7->id();
 
@@ -68,7 +68,6 @@ class Payment implements ServiceInterface {
             $value[ $k ] = $v;
         }
         $active_gateway = 'IDPay';
-//        $url_return     = $value['return'];
         $url_return     = plugins_url( '../callback.php', __FILE__ );
 
         $row                = array();
@@ -100,27 +99,10 @@ class Payment implements ServiceInterface {
         $amount  = intval( $amount );
         $desc    = $description;
 
-        if ( empty( $amount ) ): // @todo show better error
-            ?>
-            <html>
-                <head>
-                    <meta http-equiv="Content-Type"
-                          content="text/html; charset=utf-8"/>
-                    <title><?php _e( 'Error in payment operation.', 'idpay-contact-form-7' ) ?></title>
-                </head>
-                <link rel="stylesheet" media="all" type="text/css"
-                      href="<?php echo plugins_url( 'style.css', __FILE__ ) ?>">
-                <body>
-                    <div>
-                        <h3><?php _e( 'Error in payment operation.', 'idpay-contact-form-7' ) ?></h3>
-                        <h4><?php _e( 'Amount can not be empty.', 'idpay-contact-form-7' ) ?></h4>
-                        <a href="<?php echo get_option( 'siteurl' ) ?>"><?php _e( 'Go back to the site!', 'idpay-contact-form-7' ) ?></a>
-                    </div>
-                </body>
-            </html>
-            <?php
-            exit();
-        endif;
+        if ( empty( $amount ) ) {
+			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. __( 'Amount can not be empty.', 'idpay-contact-form-7' ) );
+			exit();
+        }
 
         $data    = array(
             'order_id' => time(),
@@ -143,57 +125,27 @@ class Payment implements ServiceInterface {
         );
 
         $response = $this->call_gateway_endpoint( 'https://api.idpay.ir/v1.1/payment', $args );
-        if ( is_wp_error( $response ) ) : // @todo show better error
-            ?>
-            <html>
-                <head>
-                    <meta http-equiv="Content-Type"
-                          content="text/html; charset=utf-8"/>
-                    <title><?php _e( 'Error in payment operation.', 'idpay-contact-form-7' ) ?></title>
-                </head>
-                <link rel="stylesheet" media="all" type="text/css"
-                      href="<?php echo plugins_url( 'style.css', __FILE__ ) ?>">
-                <body>
-                    <div>
-                        <h3><?php _e( 'Error in payment operation.', 'idpay-contact-form-7' ) ?></h3>
-                        <h4><?php echo $response->get_error_message(); ?></h4>
-                        <a href="<?php echo get_option( 'siteurl' ) ?>"><?php _e( 'Go back to the site!', 'idpay-contact-form-7' ) ?></a>
-                    </div>
-                </body>
-            </html>
-            <?php
-            exit();
-        endif;
+        if ( is_wp_error( $response ) ) {
+			$row['log'] = $response->get_error_message();
+			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
+			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $response->get_error_message() );
+			exit();
+		}
 
         $http_status = wp_remote_retrieve_response_code( $response );
         $result      = wp_remote_retrieve_body( $response );
         $result      = json_decode( $result );
 
-        if ( $http_status != 201 || empty( $result ) || empty( $result->id ) || empty( $result->link ) ):
-            ?>
-            <html>
-                <head>
-                    <meta http-equiv="Content-Type"
-                          content="text/html; charset=utf-8"/>
-                    <title><?php _e( 'Error in payment operation.', 'idpay-contact-form-7' ) ?></title>
-                </head>
-                <link rel="stylesheet" media="all" type="text/css"
-                      href="<?php echo plugins_url( 'style.css', __FILE__ ) ?>">
-                <body>
-                    <div>
-                        <h3><?php _e( 'Error in payment operation.', 'idpay-contact-form-7' ) ?></h3>
-                        <h4><?php echo sprintf( __( 'An error occurred while creating a transaction. error status: %s, error code: %s, error message: %s', 'idpay-contact-form-7' ), $http_status, $result->error_code, $result->error_message ) ?></h4>
-                        <a href="<?php echo get_option( 'siteurl' ) ?>"><?php _e( 'Go back to the site!', 'idpay-contact-form-7' ) ?></a>
-                    </div>
-                </body>
-            </html>
-        <?php
-        else:
-            $row['trans_id'] = $result->id;
-			global $wpdb;
+        if ( $http_status != 201 || empty( $result ) || empty( $result->id ) || empty( $result->link ) ) {
+			$row['log'] = $result;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
-            Header( 'Location: ' . $result->link );
-        endif;
+			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. sprintf( __( 'Error : %s (error code: %s)', 'idpay-contact-form-7' ), $result->error_message, $result->error_code ) );
+        }
+        else {
+			$row['trans_id'] = $result->id;
+			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
+			Header( 'Location: ' . $result->link );
+        }
         exit();
 	}
 
