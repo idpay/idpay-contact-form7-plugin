@@ -40,7 +40,6 @@ Thank you so much for using IDPay Payment Gateway.
 * Add currency setting.
 * Improve errors handling
 
-
 = 2.0.1, May 13, 2019 =
 * Use wp_safe_remote_post() method instead of curl.
 * Try several times to connect to the gateway.
