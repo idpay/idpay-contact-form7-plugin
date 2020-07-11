@@ -37,7 +37,7 @@ class Result implements ServiceInterface {
 	public function handler( $atts ) {
         if(!empty( $_GET['status'] ) && !empty( $_GET['message'] )){
         	$color = $_GET['status'] == 'failed' ? '#f44336' : '#8BC34A';
-			return '<b style="color:'. $color .';">' . $_GET['message'] . '</b>';
+			return '<b style="color:'. $color .';text-align:center;display: block;">' . $_GET['message'] . '</b>';
 		}
 		return '<b>'. _e( 'Transaction not found', 'idpay-contact-form-7' ) .'</b>';
 	}

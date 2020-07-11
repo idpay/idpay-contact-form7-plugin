@@ -129,7 +129,7 @@ class Payment implements ServiceInterface {
 			$row['status'] = 'failed';
 			$row['log'] = $error;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
-			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error );
+			Header( 'Location: ' . esc_url( $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error ) );
 			exit();
 		}
 
@@ -142,7 +142,7 @@ class Payment implements ServiceInterface {
 			$row['status'] = 'failed';
 			$row['log'] = $error;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
-			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error);
+			Header( 'Location: ' . esc_url( $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error ) );
         }
         else {
 			$row['trans_id'] = $result->id;

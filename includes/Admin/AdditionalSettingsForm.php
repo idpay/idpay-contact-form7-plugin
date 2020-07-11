@@ -220,7 +220,7 @@ class AdditionalSettingsForm implements ServiceInterface {
 			plugins_url( '../../logo.svg', __FILE__ ), __( 'Pay with IDPay', 'idpay-contact-form-7' )
 		);
 
-		$input = sprintf( '<input %1$s />', $atts );
+		$input = sprintf( '<input %1$s style="max-width: calc(100%% - 60px);"/>', $atts );
 
 		$suffix = $tag->get_option( 'currency' );
 		if(!isset($suffix[0]) || 'off' != $suffix[0]){
