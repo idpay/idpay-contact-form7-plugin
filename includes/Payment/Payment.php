@@ -37,44 +37,45 @@ class Payment implements ServiceInterface {
 		$postid = $cf7->id();
 
 		$enable = get_post_meta( $postid, "_idpay_cf7_enable", TRUE );
-		if ( $enable != "1" )
-		    return;
+		if ( $enable != "1" ){
+			return;
+		}
 
-        $wpcf7       = \WPCF7_ContactForm::get_current();
-        $submission  = \WPCF7_Submission::get_instance();
+		$wpcf7       = \WPCF7_ContactForm::get_current();
+		$submission  = \WPCF7_Submission::get_instance();
 
-        $phone       = '';
-        $description = '';
-        $amount      = '';
-        $email       = '';
-        $name        = '';
+		$phone       = '';
+		$description = '';
+		$amount      = '';
+		$email       = '';
+		$name        = '';
 
-        if ( $submission ) {
-            $data        = $submission->get_posted_data();
-            $phone       = isset( $data['idpay_phone'] ) ? $data['idpay_phone'] : "";
-            $description = isset( $data['idpay_description'] ) ? $data['idpay_description'] : "";
-            $amount      = isset( $data['idpay_amount'] ) ? $data['idpay_amount'] : "";
-            $email       = isset( $data['your-email'] ) ? $data['your-email'] : "";
-            $name        = isset( $data['your-name'] ) ? $data['your-name'] : "";
-        }
+		if ( $submission ) {
+			$data        = $submission->get_posted_data();
+			$phone       = isset( $data['idpay_phone'] ) ? $data['idpay_phone'] : "";
+			$description = isset( $data['idpay_description'] ) ? $data['idpay_description'] : "";
+			$amount      = isset( $data['idpay_amount'] ) ? $data['idpay_amount'] : "";
+			$email       = isset( $data['your-email'] ) ? $data['your-email'] : "";
+			$name        = isset( $data['your-name'] ) ? $data['your-name'] : "";
+		}
 
-        $predefined_amount = get_post_meta( $postid, "_idpay_cf7_amount", TRUE );
-        if ( $predefined_amount !== "" ) {
-            $amount = $predefined_amount;
-        }
+		$predefined_amount = get_post_meta( $postid, "_idpay_cf7_amount", TRUE );
+		if ( $predefined_amount !== "" ) {
+			$amount = $predefined_amount;
+		}
 
-        $options = get_option( 'idpay_cf7_options' );
-        foreach ( $options as $k => $v ) {
-            $value[ $k ] = $v;
-        }
-        $active_gateway = 'IDPay';
-        $url_return     = plugins_url( '../Callback.php', __FILE__ );
+		$options = get_option( 'idpay_cf7_options' );
+		foreach ( $options as $k => $v ) {
+			$value[ $k ] = $v;
+		}
+		$active_gateway = 'IDPay';
+		$url_return     = plugins_url( '../Callback.php', __FILE__ );
 
-        $row                = array();
-        $row['form_id']     = $postid;
-        $row['trans_id']    = '';
-        $row['gateway']     = $active_gateway;
-        $row['amount']      = $value['currency'] == 'rial' ? $amount : $amount * 10;
+		$row                = array();
+		$row['form_id']     = $postid;
+		$row['trans_id']    = '';
+		$row['gateway']     = $active_gateway;
+		$row['amount']      = $value['currency'] == 'rial' ? $amount : $amount * 10;
 		$row['phone']       = $phone;
 		$row['description'] = $description;
 		$row['email']       = $email;
@@ -82,50 +83,50 @@ class Payment implements ServiceInterface {
 		$row['status']      = 'pending';
 		$row['log']         = '';
 		$row_format         = array(
-            '%d',
-            '%s',
-            '%s',
-            '%d',
-            '%d',
-            '%s',
-            '%s',
-            '%s',
-            '%s',
-            "%s",
-        );
+			'%d',
+			'%s',
+			'%s',
+			'%d',
+			'%d',
+			'%s',
+			'%s',
+			'%s',
+			'%s',
+			"%s",
+		);
 
-        $api_key = $value['api_key'];
-        $sandbox = $value['sandbox'] == 1 ? 'true' : 'false';
-        $amount  = intval( $amount );
-        $desc    = $description;
+		$api_key = $value['api_key'];
+		$sandbox = $value['sandbox'] == 1 ? 'true' : 'false';
+		$amount  = intval( $amount );
+		$desc    = $description;
 
-        if ( empty( $amount ) ) {
-        	exit();
-        }
+		if ( empty( $amount ) ) {
+			exit();
+		}
 
-        $data    = array(
-            'order_id' => time(),
-            'amount'   => $value['currency'] == 'rial' ? $amount : $amount * 10,
-            'name'     => $name,
-            'phone'    => $phone,
-            'mail'     => $email,
-            'desc'     => $desc,
-            'callback' => $url_return,
-        );
-        $headers = array(
-            'Content-Type' => 'application/json',
-            'X-API-KEY'    => $api_key,
-            'X-SANDBOX'    => $sandbox,
-        );
-        $args    = array(
-            'body'    => json_encode( $data ),
-            'headers' => $headers,
-            'timeout' => 15,
-        );
+		$data    = array(
+			'order_id' => time(),
+			'amount'   => $value['currency'] == 'rial' ? $amount : $amount * 10,
+			'name'     => $name,
+			'phone'    => $phone,
+			'mail'     => $email,
+			'desc'     => $desc,
+			'callback' => $url_return,
+		);
+		$headers = array(
+			'Content-Type' => 'application/json',
+			'X-API-KEY'    => $api_key,
+			'X-SANDBOX'    => $sandbox,
+		);
+		$args    = array(
+			'body'    => json_encode( $data ),
+			'headers' => $headers,
+			'timeout' => 15,
+		);
 
-        $response = $this->call_gateway_endpoint( 'https://api.idpay.ir/v1.1/payment', $args );
-        if ( is_wp_error( $response ) ) {
-        	$error = $response->get_error_message();
+		$response = $this->call_gateway_endpoint( 'https://api.idpay.ir/v1.1/payment', $args );
+		if ( is_wp_error( $response ) ) {
+			$error = $response->get_error_message();
 			$row['status'] = 'failed';
 			$row['log'] = $error;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
@@ -133,23 +134,23 @@ class Payment implements ServiceInterface {
 			exit();
 		}
 
-        $http_status = wp_remote_retrieve_response_code( $response );
-        $result      = wp_remote_retrieve_body( $response );
-        $result      = json_decode( $result );
+		$http_status = wp_remote_retrieve_response_code( $response );
+		$result      = wp_remote_retrieve_body( $response );
+		$result      = json_decode( $result );
 
-        if ( $http_status != 201 || empty( $result ) || empty( $result->id ) || empty( $result->link ) ) {
+		if ( $http_status != 201 || empty( $result ) || empty( $result->id ) || empty( $result->link ) ) {
 			$error = sprintf( 'Error : %s (error code: %s)', $result->error_message, $result->error_code );
 			$row['status'] = 'failed';
 			$row['log'] = $error;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
 			Header( 'Location: ' . esc_url( $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error ) );
-        }
-        else {
+		}
+		else {
 			$row['trans_id'] = $result->id;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
 			Header( 'Location: ' . $result->link );
-        }
-        exit();
+		}
+		exit();
 	}
 
 	/**
