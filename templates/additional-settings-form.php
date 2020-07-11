@@ -42,7 +42,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php _e( "Also check your wp-config.php file and look for this line of code: <code>define('WPCF7_LOAD_JS', false)</code>. If there is not such a line, please put it into your wp-config.file.", 'idpay-contact-form-7' ) ?>
         </p>
         <p>
-			<?php _e( "You can add your currency as a suffix for your input by using : <code>suffix</code> in your tag. Also all of the contact-form-7 <code>text</code> tag's options are available too.", 'idpay-contact-form-7' ) ?>
+			<?php _e( "Currency are enabled by default, so if you want to turn it off, you can use : <code>currency:off</code> in your tag.", 'idpay-contact-form-7' ) ?>
         </p>
     </div>
 
@@ -61,7 +61,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <td><?php _e( 'An arbitrary amount', 'idpay-contact-form-7' ) ?></td>
                 <td>
                     <code>[payment idpay_amount]</code>
-                    <code>[payment idpay_amount suffix]</code>
+                    <code>[payment idpay_amount currency:off]</code>
                 </td>
             </tr>
             <tr>

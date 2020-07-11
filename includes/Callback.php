@@ -1,6 +1,20 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
+/**
+ * Shows a configured message when a payment is successful.
+ * This message can be configured at the Wordpress dashboard.
+ * Also note that the message will be shown
+ * if the short code has been inserted in a page.
+ *
+ * @see \IDPay\CF7\Admin\Menu::admin_table()
+ *
+ * @param $message
+ * @param $track_id
+ * @param $order_id
+ *
+ * @return string
+ */
 function filled_message( $message, $track_id, $order_id ) {
 	return str_replace( [ "{track_id}", "{order_id}" ], [
 		$track_id,
@@ -8,6 +22,16 @@ function filled_message( $message, $track_id, $order_id ) {
 	], $message );
 }
 
+/**
+ * Calls the gateway endpoints.
+ *
+ * Tries to get response from the gateway for 4 times.
+ *
+ * @param $url
+ * @param $args
+ *
+ * @return array|\WP_Error
+ */
 function call_gateway_endpoint( $url, $args ) {
 	$number_of_connection_tries = 4;
 	while ( $number_of_connection_tries ) {

@@ -27,24 +27,55 @@ class Plugin {
 	public static function activate() {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "cf7_transactions";
+		$version = get_option( 'idpay_cf7_version', '1.0' );
+
 		if ( $wpdb->get_var( "show tables like '$table_name'" ) != $table_name ) {
-			$sql = "CREATE TABLE " . $table_name . " (
-			id mediumint(11) NOT NULL AUTO_INCREMENT,
-			form_id bigint(11) DEFAULT '0' NOT NULL,
-			trans_id VARCHAR(255) NOT NULL,
-			track_id VARCHAR(255) NULL,
-			gateway VARCHAR(255) NOT NULL,
-			amount bigint(11) DEFAULT '0' NOT NULL,
-			phone VARCHAR(11) NULL,
-			description VARCHAR(255) NOT NULL,
-			email VARCHAR(255) NULL,
-			created_at bigint(11) DEFAULT '0' NOT NULL,
-			status VARCHAR(255) NOT NULL,
-			log longtext,
-			PRIMARY KEY id (id)
-		);";
+			$sql = "CREATE TABLE $table_name (
+                    id mediumint(11) NOT NULL AUTO_INCREMENT,
+                    form_id bigint(11) DEFAULT '0' NOT NULL,
+                    trans_id VARCHAR(255) NOT NULL,
+                    track_id VARCHAR(255) NULL,
+                    gateway VARCHAR(255) NOT NULL,
+                    amount bigint(11) DEFAULT '0' NOT NULL,
+                    phone VARCHAR(11) NULL,
+                    description VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) NULL,
+                    created_at bigint(11) DEFAULT '0' NOT NULL,
+                    status VARCHAR(255) NOT NULL,
+                    PRIMARY KEY id (id)
+                );";
 			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			dbDelta( $sql );
+
+			if ( version_compare( $version, '2.1.0' ) < 0 ) {
+				$collate = '';
+
+				if ( $wpdb->has_cap( 'collation' ) ) {
+					if ( ! empty($wpdb->charset ) ) {
+						$collate .= "DEFAULT CHARACTER SET utf8";
+					}
+					if ( ! empty($wpdb->collate ) ) {
+						$collate .= " COLLATE $wpdb->collate";
+					}
+				}
+				$sql = "CREATE TABLE $table_name (
+                        id mediumint(11) NOT NULL AUTO_INCREMENT,
+                        form_id bigint(11) DEFAULT '0' NOT NULL,
+                        trans_id VARCHAR(255) NOT NULL,
+                        track_id VARCHAR(255) NULL,
+                        gateway VARCHAR(255) NOT NULL,
+                        amount bigint(11) DEFAULT '0' NOT NULL,
+                        phone VARCHAR(11) NULL,
+                        description VARCHAR(255) NOT NULL,
+                        email VARCHAR(255) NULL,
+                        created_at bigint(11) DEFAULT '0' NOT NULL,
+                        status VARCHAR(255) NOT NULL,
+                        log LONGTEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
+                        PRIMARY KEY id (id)
+                    ) $collate;";
+				dbDelta( $sql );
+				update_option( 'idpay_cf7_version', '2.1.0' );
+			}
 		}
 
 		function wp_config_put( $slash = '' ) {
@@ -89,9 +120,9 @@ class Plugin {
 			file_put_contents( ABSPATH . $slash . "wp-config.php", $config );
 		}
 
-        function return_error() {
-            ob_start();
-            ?>
+		function return_error() {
+			ob_start();
+			?>
             <div class="error">
                 <p><?php _e( 'wp-config.php is not writable, please make wp-config.php writable - set it to 0777 temporarily, then set back to its original setting after this plugin has been deactivated.', 'idpay-contact-form-7' ); ?></p>
             </div>
@@ -101,19 +132,20 @@ class Plugin {
                     window.history.back();
                 }
             </script>
-            <?php
-            return ob_get_clean();
-        }
+			<?php
+			return ob_get_clean();
+		}
 
 		if ( file_exists( ABSPATH . "wp-config.php" ) && is_writable( ABSPATH . "wp-config.php" ) ) {
 			wp_config_delete();
 		} else if ( file_exists( dirname( ABSPATH ) . "/wp-config.php" ) && is_writable( dirname( ABSPATH ) . "/wp-config.php" ) ) {
 			wp_config_delete( '/' );
 		} else {
-            print return_error();
-            exit;
+			print return_error();
+			exit;
 		}
 
 		delete_option( "idpay_cf7_options" );
+		delete_option( "idpay_cf7_version" );
 	}
 }

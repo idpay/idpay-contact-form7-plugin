@@ -33,6 +33,14 @@ class AdditionalSettingsForm implements ServiceInterface {
 			$this,
 			'idpay_payment_tag',
 		) );
+		add_filter( 'wpcf7_validate_payment', array(
+			$this,
+			'idpay_payment_tag_validation',
+		) , 10, 2);
+		add_filter( 'wpcf7_validate_payment*', array(
+			$this,
+			'idpay_payment_tag_validation',
+		) , 10, 2);
 	}
 
 	/**
@@ -93,11 +101,11 @@ class AdditionalSettingsForm implements ServiceInterface {
 				if( $occurrence == 0 ){
 					//change the shortcodes used in the form if the default amount is set
 					if ( $amount !== "" ){
-						$pos = strpos( $str, 'suffix' );
+						$pos = strpos( $str, 'currency' );
 						if( $pos === false ){
 							$post_content = implode( 'idpay_amount readonly default:post_meta "'. $amount .'"]', $parts );
 						}else{
-							$post_content = implode( 'idpay_amount suffix readonly default:post_meta "'. $amount .'"]', $parts );
+							$post_content = implode( 'idpay_amount currency:off readonly default:post_meta "'. $amount .'"]', $parts );
 						}
 					}
 				}
@@ -214,7 +222,9 @@ class AdditionalSettingsForm implements ServiceInterface {
 
 		$input = sprintf( '<input %1$s />', $atts );
 
-		if ( $tag->has_option( 'suffix' ) ) {
+		$suffix = $tag->get_option( 'currency' );
+		if(!isset($suffix[0]) || 'off' != $suffix[0]){
+			//shows the currency for default
 			$options = get_option( 'idpay_cf7_options' );
 			$suffix  = '<span class="currency idpay-currency" style="position: absolute;top: calc(50% - 12px);left: 5px;">'. __( $options['currency'] == 'rial' ? 'Rial' : 'Toman', 'idpay-contact-form-7' ) .'</span>';
 			$input   = '<span class="idpay-input-holder" style="position: relative;display: block;">'. $input . $suffix .'</span>';
@@ -238,5 +248,47 @@ class AdditionalSettingsForm implements ServiceInterface {
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Validates tag properties
+	 *
+	 * @param $result
+	 * 	validations from other tags
+	 *
+	 * @param $tag
+	 *
+	 * @return $result
+	 */
+	public function idpay_payment_tag_validation( $result, $tag )
+	{
+		$name = $tag->name;
+
+		$value = isset($_POST[$name])
+			? trim(wp_unslash(strtr((string)$_POST[$name], "\n", " ")))
+			: '';
+
+		if ('' === $value) {
+			$result->invalidate($tag, wpcf7_get_message('invalid_required'));
+		}
+		else {
+			$options = get_option( 'idpay_cf7_options' );
+			$amount = $options['currency'] == 'rial' ? intval($value) : intval($value) * 10;
+			if ( 500000000 < $amount ) {
+				$result->invalidate( $tag, sprintf(
+					__( 'amount should be less than %d %s', 'idpay-contact-form-7' ),
+					50000000 * $options['currency'] == 'rial' ? 10 : 1 ,
+					__( $options['currency'] == 'rial' ? 'Rial' : 'Toman', 'idpay-contact-form-7' )
+				) );
+			} elseif ( $amount < 1000 ) {
+				$result->invalidate( $tag, sprintf(
+					__( 'amount should be greater than %d %s', 'idpay-contact-form-7' ),
+					100 * ( $options['currency'] == 'rial' ? 10 : 1 ),
+					__( $options['currency'] == 'rial' ? 'Rial' : 'Toman', 'idpay-contact-form-7' )
+				) );
+			}
+		}
+
+		return $result;
 	}
 }

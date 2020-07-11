@@ -8,7 +8,7 @@ namespace IDPay\CF7;
 use IDPay\CF7\Admin\AdditionalSettingsForm;
 use IDPay\CF7\Admin\Menu;
 use IDPay\CF7\Payment\Payment;
-use IDPay\CF7\Payment\Callback;
+use IDPay\CF7\Payment\Result;
 
 /**
  * Class Init
@@ -36,7 +36,7 @@ class Init {
 	private static function discover() {
 		return array(
 			AdditionalSettingsForm::class,
-			Callback::class,
+			Result::class,
 			Menu::class,
 			Payment::class,
 		);

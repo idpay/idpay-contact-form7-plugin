@@ -68,20 +68,20 @@ class Payment implements ServiceInterface {
             $value[ $k ] = $v;
         }
         $active_gateway = 'IDPay';
-        $url_return     = plugins_url( '../callback.php', __FILE__ );
+        $url_return     = plugins_url( '../Callback.php', __FILE__ );
 
         $row                = array();
         $row['form_id']     = $postid;
         $row['trans_id']    = '';
         $row['gateway']     = $active_gateway;
         $row['amount']      = $value['currency'] == 'rial' ? $amount : $amount * 10;
-        $row['created_at']  = time();
-        $row['phone']       = $phone;
-        $row['description'] = $description;
-        $row['email']       = $email;
-        $row['status']      = 'pending';
-        $row['log']         = '';
-        $row_format         = array(
+		$row['phone']       = $phone;
+		$row['description'] = $description;
+		$row['email']       = $email;
+		$row['created_at']  = time();
+		$row['status']      = 'pending';
+		$row['log']         = '';
+		$row_format         = array(
             '%d',
             '%s',
             '%s',
@@ -91,7 +91,7 @@ class Payment implements ServiceInterface {
             '%s',
             '%s',
             '%s',
-            '%s',
+            "%s",
         );
 
         $api_key = $value['api_key'];
@@ -100,8 +100,7 @@ class Payment implements ServiceInterface {
         $desc    = $description;
 
         if ( empty( $amount ) ) {
-			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. __( 'Amount can not be empty.', 'idpay-contact-form-7' ) );
-			exit();
+        	exit();
         }
 
         $data    = array(
@@ -126,9 +125,11 @@ class Payment implements ServiceInterface {
 
         $response = $this->call_gateway_endpoint( 'https://api.idpay.ir/v1.1/payment', $args );
         if ( is_wp_error( $response ) ) {
-			$row['log'] = $response->get_error_message();
+        	$error = $response->get_error_message();
+			$row['status'] = 'failed';
+			$row['log'] = $error;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
-			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $response->get_error_message() );
+			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error );
 			exit();
 		}
 
@@ -137,9 +138,11 @@ class Payment implements ServiceInterface {
         $result      = json_decode( $result );
 
         if ( $http_status != 201 || empty( $result ) || empty( $result->id ) || empty( $result->link ) ) {
-			$row['log'] = $result;
+			$error = sprintf( 'Error : %s (error code: %s)', $result->error_message, $result->error_code );
+			$row['status'] = 'failed';
+			$row['log'] = $error;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
-			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. sprintf( __( 'Error : %s (error code: %s)', 'idpay-contact-form-7' ), $result->error_message, $result->error_code ) );
+			Header( 'Location: ' . $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error);
         }
         else {
 			$row['trans_id'] = $result->id;

@@ -236,11 +236,11 @@ msgstr ""
 msgid "An error occurred while creating a transaction. error status: %s, error code: %s, error message: %s"
 msgstr ""
 
-#: includes/Payment/Callback.php:106
+#: includes/Payment/Result.php:106
 msgid "An error occurred while verifying a transaction. error status: %s, error code: %s, error message: %s"
 msgstr ""
 
-#: includes/Payment/Callback.php:137
+#: includes/Payment/Result.php:137
 msgid "Transaction not found"
 msgstr ""
 
