@@ -217,7 +217,7 @@ class AdditionalSettingsForm implements ServiceInterface {
 
 		$idpay_logo = sprintf(
 			'<span class="idpay-logo" style="font-size: 12px;padding: 5px 0;"><img src="%1$s" style="display: inline-block;vertical-align: middle;width: 70px;">%2$s</span>',
-			plugins_url( '../../logo.svg', __FILE__ ), __( 'Pay with IDPay', 'idpay-contact-form-7' )
+			plugins_url( '../../assets/logo.svg', __FILE__ ), __( 'Pay with IDPay', 'idpay-contact-form-7' )
 		);
 
 		$input = sprintf( '<input %1$s style="max-width: calc(100%% - 60px);"/>', $atts );
@@ -235,7 +235,7 @@ class AdditionalSettingsForm implements ServiceInterface {
 			sanitize_html_class( $tag->name ), $input, $validation_error, $idpay_logo
 		);
 
-		if($_GET['idpay_error']){
+		if( !empty( $_GET['idpay_error'] ) ){
 			echo '<div class="alert alert-error idpay-error">'. $_GET['idpay_error'] .'</div>';
 			echo '<style>
 				.idpay-error{

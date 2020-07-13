@@ -64,7 +64,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
 	$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . $wpdb->prefix . "cf7_transactions WHERE trans_id='%s'", $id ) );
 	if ( $row !== NULL ) {
 		if ( $row->status == 'completed' ) {
-			Header( 'Location: ' . esc_url( $value['return'] . '?status=success&message=' . filled_message( $value['success_message'], $row->track_id, $row->order_id ) ) );
+			Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=success&message=' . filled_message( $value['success_message'], $row->track_id, $row->order_id ) ) );
 			exit();
 		}
 	}
@@ -84,7 +84,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
 			),
 			array( '%d' )
 		);
-		Header( 'Location: ' . esc_url( $value['return'] . '?status=failed&message=' . filled_message( $value['failed_message'], $track_id, $order_id ) ) );
+		Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . filled_message( $value['failed_message'], $track_id, $order_id ) ) );
 		exit();
 	}
 
@@ -109,7 +109,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
 	$response = call_gateway_endpoint( 'https://api.idpay.ir/v1.1/payment/verify', $args );
 
 	if ( is_wp_error( $response ) ) {
-		Header( 'Location: ' . esc_url( $value['return'] . '?status=failed&message=' . $response->get_error_message() ) );
+		Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . $response->get_error_message() ) );
 		exit();
 	}
 
@@ -132,7 +132,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
 			array( '%d' )
 		);
 
-		Header( 'Location: ' . esc_url( $value['return'] . '?status=failed&message=' . $message ) );
+		Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . $message ) );
 		exit();
 	}
 
@@ -158,7 +158,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
 			array( '%d' )
 		);
 
-		Header( 'Location: ' . esc_url( $value['return'] . '?status=failed&message=' . filled_message( $value['failed_message'], $verify_track_id, $verify_order_id ) ) );
+		Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . filled_message( $value['failed_message'], $verify_track_id, $verify_order_id ) ) );
 		exit();
 	} else {
 		$wpdb->update( $wpdb->prefix . 'cf7_transactions',
@@ -174,10 +174,10 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
 			array( '%d' )
 		);
 
-		Header( 'Location: ' . esc_url( $value['return'] . '?status=success&message=' . filled_message( $value['success_message'], $verify_track_id, $verify_order_id ) ) );
+		Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=success&message=' . filled_message( $value['success_message'], $verify_track_id, $verify_order_id ) ) );
 		exit();
 	}
 } else {
-	Header( 'Location: ' . esc_url( $value['return'] . '?status=failed&message=' . __( 'Transaction not found', 'idpay-contact-form-7' ) ) );
+	Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . __( 'Transaction not found', 'idpay-contact-form-7' ) ) );
 	exit();
 }

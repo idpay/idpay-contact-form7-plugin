@@ -35,7 +35,7 @@ class Result implements ServiceInterface {
      * @return string
      */
 	public function handler( $atts ) {
-        if(!empty( $_GET['status'] ) && !empty( $_GET['message'] )){
+        if( !empty( $_GET['status'] ) && !empty( $_GET['message'] ) ){
         	$color = $_GET['status'] == 'failed' ? '#f44336' : '#8BC34A';
 			return '<b style="color:'. $color .';text-align:center;display: block;">' . $_GET['message'] . '</b>';
 		}
