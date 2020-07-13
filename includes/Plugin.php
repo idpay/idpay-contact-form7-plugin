@@ -46,40 +46,11 @@ class Plugin {
             );";
 			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			dbDelta( $sql );
-
-			if ( version_compare( $version, '2.1.0' ) < 0 ) {
-				$collate = '';
-
-				if ( $wpdb->has_cap( 'collation' ) ) {
-					if ( ! empty($wpdb->charset ) ) {
-						$collate .= "DEFAULT CHARACTER SET utf8";
-					}
-					if ( ! empty($wpdb->collate ) ) {
-						$collate .= " COLLATE $wpdb->collate";
-					}
-				}
-				$sql = "CREATE TABLE $table_name (
-                    id mediumint(11) NOT NULL AUTO_INCREMENT,
-                    form_id bigint(11) DEFAULT '0' NOT NULL,
-                    trans_id VARCHAR(255) NOT NULL,
-                    track_id VARCHAR(255) NULL,
-                    gateway VARCHAR(255) NOT NULL,
-                    amount bigint(11) DEFAULT '0' NOT NULL,
-                    phone VARCHAR(11) NULL,
-                    description VARCHAR(255) NOT NULL,
-                    email VARCHAR(255) NULL,
-                    created_at bigint(11) DEFAULT '0' NOT NULL,
-                    status VARCHAR(255) NOT NULL,
-                    log LONGTEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-                    PRIMARY KEY id (id)
-                ) $collate;";
-				dbDelta( $sql );
-				update_option( 'idpay_cf7_version', '2.1.0' );
-			}
 		}
 
 		function wp_config_put( $slash = '' ) {
 			$config = file_get_contents( ABSPATH . "wp-config.php" );
+            $config = preg_replace( "/( ?)(define)( ?)(\()( ?)(['\"])WPCF7_LOAD_JS(['\"])( ?)(,)( ?)(0|1|true|false)( ?)(\))( ?);/i", "", $config );
 			$config = preg_replace( "/^([\r\n\t ]*)(\<\?)(php)?/i", "<?php define('WPCF7_LOAD_JS', false);", $config );
 			file_put_contents( ABSPATH . $slash . "wp-config.php", $config );
 		}
@@ -148,4 +119,42 @@ class Plugin {
 		delete_option( "idpay_cf7_options" );
 		delete_option( "idpay_cf7_version" );
 	}
+
+    public static function update() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . "cf7_transactions";
+        $version = get_option( 'idpay_cf7_version', '1.0' );
+
+        if ( version_compare( $version, '2.1.0' ) < 0 ) {
+            $collate = '';
+
+            if ( $wpdb->has_cap( 'collation' ) ) {
+                if ( ! empty($wpdb->charset ) ) {
+                    $collate .= "DEFAULT CHARACTER SET utf8";
+                }
+                if ( ! empty($wpdb->collate ) ) {
+                    $collate .= " COLLATE $wpdb->collate";
+                }
+            }
+            $sql = "CREATE TABLE $table_name (
+                    id mediumint(11) NOT NULL AUTO_INCREMENT,
+                    form_id bigint(11) DEFAULT '0' NOT NULL,
+                    trans_id VARCHAR(255) NOT NULL,
+                    track_id VARCHAR(255) NULL,
+                    gateway VARCHAR(255) NOT NULL,
+                    amount bigint(11) DEFAULT '0' NOT NULL,
+                    phone VARCHAR(11) NULL,
+                    description VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) NULL,
+                    created_at bigint(11) DEFAULT '0' NOT NULL,
+                    status VARCHAR(255) NOT NULL,
+                    log LONGTEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
+                    PRIMARY KEY id (id)
+                ) $collate;";
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta( $sql );
+
+            update_option( 'idpay_cf7_version', '2.1.0' );
+        }
+    }
 }

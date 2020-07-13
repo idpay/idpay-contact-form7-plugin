@@ -43,7 +43,7 @@ add_action( 'plugins_loaded', 'cf7_idpay_update_db', 10, 0 );
 function cf7_idpay_update_db() {
 	$version = get_option( 'idpay_cf7_version', '1.0' );
 	if ( version_compare( $version, '2.1.0' ) < 0 ) {
-		Plugin::activate();
+		Plugin::update();
 	}
 }
 
