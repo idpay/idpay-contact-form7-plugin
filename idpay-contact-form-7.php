@@ -21,30 +21,30 @@ define( 'CF7_IDPAY_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
  * Load plugin textdomain.
  */
 function idpay_contact_form_7_load_textdomain() {
-	load_plugin_textdomain( 'idpay-contact-form-7', false, basename( dirname( __FILE__ ) ) . '/languages' );
+    load_plugin_textdomain( 'idpay-contact-form-7', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 
 add_action( 'init', 'idpay_contact_form_7_load_textdomain' );
 
 include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 if ( is_plugin_active( 'contact-form-7/wp-contact-form-7.php' ) ) {
-	Init::call_services();
+    Init::call_services();
 }
 
 function cf7_idpay_activate() {
-	Plugin::activate();
+    Plugin::activate();
 }
 
 function cf7_idpay_deactivate() {
-	Plugin::deactivate();
+    Plugin::deactivate();
 }
 
 add_action( 'plugins_loaded', 'cf7_idpay_update_db', 10, 0 );
 function cf7_idpay_update_db() {
-	$version = get_option( 'idpay_cf7_version', '1.0' );
-	if ( version_compare( $version, '2.1.0' ) < 0 ) {
-		Plugin::update();
-	}
+    $version = get_option( 'idpay_cf7_version', '1.0' );
+    if ( version_compare( $version, '2.1.0' ) < 0 ) {
+        Plugin::update();
+    }
 }
 
 $plugin = new IDPay\CF7\Plugin();
