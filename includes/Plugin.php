@@ -48,17 +48,10 @@ class Plugin {
             dbDelta( $sql );
         }
 
-        function wp_config_put( $slash = '' ) {
-            $config = file_get_contents( ABSPATH . "wp-config.php" );
-            $config = preg_replace( "/( ?)(define)( ?)(\()( ?)(['\"])WPCF7_LOAD_JS(['\"])( ?)(,)( ?)(0|1|true|false)( ?)(\))( ?);/i", "", $config );
-            $config = preg_replace( "/^([\r\n\t ]*)(\<\?)(php)?/i", "<?php define('WPCF7_LOAD_JS', false);", $config );
-            file_put_contents( ABSPATH . $slash . "wp-config.php", $config );
-        }
-
         if ( file_exists( ABSPATH . "wp-config.php" ) && is_writable( ABSPATH . "wp-config.php" ) ) {
-            wp_config_put();
+            self::wp_config_put();
         } else if ( file_exists( dirname( ABSPATH ) . "/wp-config.php" ) && is_writable( dirname( ABSPATH ) . "/wp-config.php" ) ) {
-            wp_config_put( '/' );
+            self::wp_config_put( '/' );
         } else {
             ?>
             <div class="error">
@@ -137,24 +130,66 @@ class Plugin {
                 }
             }
             $sql = "CREATE TABLE $table_name (
-                    id mediumint(11) NOT NULL AUTO_INCREMENT,
-                    form_id bigint(11) DEFAULT '0' NOT NULL,
-                    trans_id VARCHAR(255) NOT NULL,
-                    track_id VARCHAR(255) NULL,
-                    gateway VARCHAR(255) NOT NULL,
-                    amount bigint(11) DEFAULT '0' NOT NULL,
-                    phone VARCHAR(11) NULL,
-                    description VARCHAR(255) NOT NULL,
-                    email VARCHAR(255) NULL,
-                    created_at bigint(11) DEFAULT '0' NOT NULL,
-                    status VARCHAR(255) NOT NULL,
-                    log LONGTEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-                    PRIMARY KEY id (id)
-                ) $collate;";
+                id mediumint(11) NOT NULL AUTO_INCREMENT,
+                form_id bigint(11) DEFAULT '0' NOT NULL,
+                trans_id VARCHAR(255) NOT NULL,
+                track_id VARCHAR(255) NULL,
+                gateway VARCHAR(255) NOT NULL,
+                amount bigint(11) DEFAULT '0' NOT NULL,
+                phone VARCHAR(11) NULL,
+                description VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NULL,
+                created_at bigint(11) DEFAULT '0' NOT NULL,
+                status VARCHAR(255) NOT NULL,
+                log LONGTEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
+                PRIMARY KEY id (id)
+            ) $collate;";
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta( $sql );
 
+            //update options
+            $options = get_option( 'idpay_cf7_options' );
+            if(empty($options['currency'])){
+                $options['currency'] = 'rial';
+                update_option( "idpay_cf7_options", $options );
+            }
             update_option( 'idpay_cf7_version', '2.1.1' );
+
+            //handle the mistake from version 2.1.0
+            if ( file_exists( ABSPATH . "wp-config.php" ) && is_writable( ABSPATH . "wp-config.php" ) ) {
+                self::wp_config_put();
+            } else if ( file_exists( dirname( ABSPATH ) . "/wp-config.php" ) && is_writable( dirname( ABSPATH ) . "/wp-config.php" ) ) {
+                self::wp_config_put( '/' );
+            } else {
+                ?>
+                <div class="error">
+                    <p><?php _e( 'wp-config.php is not writable, please make wp-config.php writable - set it to 0777 temporarily, then set back to its original setting after this plugin has been activated.', 'idpay-contact-form-7' ); ?></p>
+                </div>
+                <?php
+                exit;
+            }
+
+            //update all the previous tags to new one we defined
+            $rows = $wpdb->get_results( "SELECT * FROM " . $wpdb->prefix . "postmeta WHERE meta_key='_form'" );
+            if ( ! empty( $rows ) ) {
+                foreach ($rows as $row) {
+                    $meta_value = preg_replace('/(\[(text))(  *)(idpay_amount){1}(?!\-)(?!\_)(?![A-Za-z_0-9])/', '[payment idpay_amount', $row->meta_value);
+                    $meta_value = preg_replace('/(\[(text\*))(  *)(idpay_amount){1}(?!\-)(?!\_)(?![A-Za-z_0-9])/', '[payment* idpay_amount', $meta_value);
+                    $wpdb->update( $wpdb->prefix . 'postmeta',
+                        array( 'meta_value' => $meta_value ),
+                        array( 'meta_id' => $row->meta_id ),
+                        array( '%s' ),
+                        array( '%d' )
+                    );
+                }
+            }
         }
+    }
+
+    public static function wp_config_put( $slash = '' ){
+        $config = file_get_contents( ABSPATH . "wp-config.php" );
+        $config = preg_replace( "/( ?)(define)( ?)(\()( ?)(['\"])WPCF7_LOAD_JS(['\"])( ?)(,)( ?)(0|1|true|false)( ?)(\))( ?);/i", "", $config );
+        $config = preg_replace( "/^([\r\n\t ]*)(\<\?)(php)?/i", "<?php define('WPCF7_LOAD_JS', false);", $config );
+        file_put_contents( ABSPATH . $slash . "wp-config.php", $config );
     }
 }

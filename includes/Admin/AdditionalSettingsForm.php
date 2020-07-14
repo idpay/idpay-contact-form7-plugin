@@ -27,7 +27,7 @@ class AdditionalSettingsForm implements ServiceInterface {
         add_action( 'wpcf7_save_contact_form', array(
             $this,
             'save',
-        ) );
+        ), 10, 1 );
         add_action( 'wpcf7_init',
             array(
                 $this,
@@ -119,9 +119,9 @@ class AdditionalSettingsForm implements ServiceInterface {
                 }
                 $occurrence++;
             }
-            $properties['form'] = $post_content;
-            $cf7->set_properties( $properties );
         }
+        $properties['form'] = $post_content;
+        $cf7->set_properties( $properties );
     }
 
     /**
