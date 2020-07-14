@@ -125,7 +125,7 @@ class Plugin {
         $table_name = $wpdb->prefix . "cf7_transactions";
         $version = get_option( 'idpay_cf7_version', '1.0' );
 
-        if ( version_compare( $version, '2.1.0' ) < 0 ) {
+        if ( version_compare( $version, '2.1.1' ) < 0 ) {
             $collate = '';
 
             if ( $wpdb->has_cap( 'collation' ) ) {
@@ -154,7 +154,7 @@ class Plugin {
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta( $sql );
 
-            update_option( 'idpay_cf7_version', '2.1.0' );
+            update_option( 'idpay_cf7_version', '2.1.1' );
         }
     }
 }

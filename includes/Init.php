@@ -20,42 +20,40 @@ use IDPay\CF7\Payment\Result;
  */
 class Init {
 
-	public static function call_services() {
-		foreach ( self::discover() as $class ) {
-			/** @var \IDPay\CF7\ServiceInterface $service */
-			$service = self::instantiate( $class );
-			$service->register();
-		}
-	}
+    public static function call_services() {
+        foreach ( self::discover() as $class ) {
+            /** @var \IDPay\CF7\ServiceInterface $service */
+            $service = self::instantiate( $class );
+            $service->register();
+        }
+    }
 
-	/**
-	 * Lists all services.
-	 *
-	 * @return array
-	 */
-	private static function discover() {
-		return array(
-			AdditionalSettingsForm::class,
-			Result::class,
-			Menu::class,
-			Payment::class,
-		);
-	}
+    /**
+     * Lists all services.
+     *
+     * @return array
+     */
+    private static function discover() {
+        return array(
+            AdditionalSettingsForm::class,
+            Result::class,
+            Menu::class,
+            Payment::class,
+        );
+    }
 
-	/**
-	 * Instantiate a class.
-	 *
-	 * @param $class
-	 *   the class must be instantiated.
-	 *
-	 * @return \IDPay\CF7\ServiceInterface
-	 */
+    /**
+     * Instantiate a class.
+     *
+     * @param $class
+     *   the class must be instantiated.
+     *
+     * @return \IDPay\CF7\ServiceInterface
+     */
 
-	private static function instantiate( $class ) {
-		/** @var \IDPay\CF7\ServiceInterface $service */
-		$service = new $class();
-
-		return $service;
-	}
-
+    private static function instantiate( $class ) {
+        /** @var \IDPay\CF7\ServiceInterface $service */
+        $service = new $class();
+        return $service;
+    }
 }

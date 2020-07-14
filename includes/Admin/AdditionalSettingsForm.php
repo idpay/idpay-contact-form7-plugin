@@ -238,13 +238,13 @@ class AdditionalSettingsForm implements ServiceInterface {
         if( !empty( $_GET['idpay_error'] ) ){
             echo '<div class="alert alert-error idpay-error">'. $_GET['idpay_error'] .'</div>';
             echo '<style>
-				.idpay-error{
-					color: #F44336;
-					font-size: 13px;
-					border-right: 2px solid #F44336;
-					padding: 5px 15px;
-				}
-			</style>';
+                .idpay-error{
+                    color: #F44336;
+                    font-size: 13px;
+                    border-right: 2px solid #F44336;
+                    padding: 5px 15px;
+                }
+            </style>';
         }
 
         return $html;
