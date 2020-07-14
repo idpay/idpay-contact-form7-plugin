@@ -19,8 +19,8 @@ namespace IDPay\CF7;
  */
 interface ServiceInterface {
 
-	/**
-	 * A place for calling hooks.
-	 */
-	public function register();
+    /**
+     * A place for calling hooks.
+     */
+    public function register();
 }
