@@ -69,12 +69,13 @@ class Payment implements ServiceInterface {
 			$value[ $k ] = $v;
 		}
 		$active_gateway = 'IDPay';
-		$url_return     = plugins_url( '../Callback.php', __FILE__ );
+		$url_return     = get_home_url()."?cf7_idpay=callback";
 
 		$row                = array();
 		$row['form_id']     = $postid;
 		$row['trans_id']    = '';
 		$row['gateway']     = $active_gateway;
+		$row['amount']      = $value['currency'] == 'rial' ? $amount : $amount * 10;
 		$row['amount']      = $value['currency'] == 'rial' ? $amount : $amount * 10;
 		$row['phone']       = $phone;
 		$row['description'] = $description;

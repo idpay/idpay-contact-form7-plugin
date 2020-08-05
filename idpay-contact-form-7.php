@@ -45,6 +45,12 @@ function cf7_idpay_update_db() {
     if ( version_compare( $version, '2.1.1' ) < 0 ) {
         Plugin::update();
     }
+
+    if(isset($_GET['cf7_idpay'])){
+        if($_GET['cf7_idpay'] == 'callback') {
+            require_once( dirname(__FILE__) . '/includes/Callback.php' );
+        }
+    }
 }
 
 $plugin = new IDPay\CF7\Plugin();
