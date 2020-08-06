@@ -4,7 +4,7 @@ Plugin Name: IDPay for Contact Form 7
 Description: Integrates IDPay Payment Gateway with Contact Form 7
 Author: IDPay
 Author URI: https://idpay.ir/
-Version: 2.1.1
+Version: 2.1.2
 Text Domain: idpay-contact-form-7
 Domain Path: languages
 */
@@ -44,6 +44,12 @@ function cf7_idpay_update_db() {
     $version = get_option( 'idpay_cf7_version', '1.0' );
     if ( version_compare( $version, '2.1.1' ) < 0 ) {
         Plugin::update();
+    }
+
+    if(isset($_GET['cf7_idpay'])){
+        if($_GET['cf7_idpay'] == 'callback') {
+            require_once( dirname(__FILE__) . '/includes/Callback.php' );
+        }
     }
 }
 
