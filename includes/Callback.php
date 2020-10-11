@@ -46,11 +46,11 @@ function call_gateway_endpoint( $url, $args ) {
     return $response;
 }
 
-$status   = empty( $_POST['status'] ) ? NULL : $_POST['status'];
-$track_id = empty( $_POST['track_id'] ) ? NULL : $_POST['track_id'];
-$id       = empty( $_POST['id'] ) ? NULL : $_POST['id'];
-$order_id = empty( $_POST['order_id'] ) ? NULL : $_POST['order_id'];
-$amount   = empty( $_POST['amount'] ) ? NULL : $_POST['amount'];
+$status    = !empty($_POST['status'])  ? $_POST['status']   : (!empty($_GET['status'])  ? $_GET['status']   : NULL);
+$track_id  = !empty($_POST['track_id'])? $_POST['track_id'] : (!empty($_GET['track_id'])? $_GET['track_id'] : NULL);
+$id        = !empty($_POST['id'])      ? $_POST['id']       : (!empty($_GET['id'])      ? $_GET['id']       : NULL);
+$order_id  = !empty($_POST['order_id'])? $_POST['order_id'] : (!empty($_GET['order_id'])? $_GET['order_id'] : NULL);
+$params    = !empty($_POST['id']) ? $_POST : $_GET;
 
 global $wpdb;
 $value   = array();
@@ -64,7 +64,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
     $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . $wpdb->prefix . "cf7_transactions WHERE trans_id='%s'", $id ) );
     if ( $row !== NULL ) {
         if ( $row->status == 'completed' ) {
-            Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=success&message=' . filled_message( $value['success_message'], $row->track_id, $row->order_id ) ) );
+            wp_redirect( add_query_arg( ['status' => 'success', 'message' => filled_message( $value['success_message'], $row->track_id, $row->order_id )], $value['return'] ) );
             exit();
         }
     }
@@ -74,7 +74,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             array(
                 'status'   => 'failed',
                 'track_id' => $track_id,
-                'log'  => 'POST => '. print_r($_POST, true)
+                'log'  => 'data => <pre>'. print_r($params, true) . '</pre>'
             ),
             array( 'trans_id' => $id ),
             array(
@@ -84,7 +84,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             ),
             array( '%d' )
         );
-        Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . filled_message( $value['failed_message'], $track_id, $order_id ) ) );
+        wp_redirect( add_query_arg( ['status' => 'failed', 'message' => filled_message( $value['failed_message'], $track_id, $order_id )], $value['return'] ) );
         exit();
     }
 
@@ -109,7 +109,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
     $response = call_gateway_endpoint( 'https://api.idpay.ir/v1.1/payment/verify', $args );
 
     if ( is_wp_error( $response ) ) {
-        Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . $response->get_error_message() ) );
+        wp_redirect( add_query_arg( ['status' => 'failed', 'message' => $response->get_error_message()], $value['return'] ) );
         exit();
     }
 
@@ -122,7 +122,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
         $wpdb->update( $wpdb->prefix . 'cf7_transactions',
             array(
                 'status' => 'failed',
-                'log'  => $message . '\n POST => '. print_r($_POST, true),
+                'log'  => $message . '\n data => <pre>'. print_r($params, true) . '</pre>',
             ),
             array( 'trans_id' => $id ),
             array(
@@ -132,7 +132,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             array( '%d' )
         );
 
-        Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . $message ) );
+        wp_redirect( add_query_arg( ['status' => 'failed', 'message' => $message], $value['return'] ) );
         exit();
     }
 
@@ -142,12 +142,12 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
     $verify_order_id = empty( $result->order_id ) ? NULL : $result->order_id;
     $verify_amount   = empty( $result->amount ) ? NULL : $result->amount;
 
-    if ( empty( $verify_status ) || empty( $verify_track_id ) || empty( $verify_amount ) || $verify_amount != $amount || $verify_status < 100 ) {
+    if ( empty( $verify_status ) || empty( $verify_track_id ) || $verify_status < 100 ) {
         $wpdb->update( $wpdb->prefix . 'cf7_transactions',
             array(
                 'status'   => 'failed',
                 'track_id' => $verify_track_id,
-                'log'  => 'verify result => '. print_r($result, true),
+                'log'  => 'verify result => <pre>'. print_r($result, true) . '</pre>',
             ),
             array( 'trans_id' => $verify_id ),
             array(
@@ -158,26 +158,28 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             array( '%d' )
         );
 
-        Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . filled_message( $value['failed_message'], $verify_track_id, $verify_order_id ) ) );
+        wp_redirect( add_query_arg( ['status' => 'failed', 'message' => filled_message( $value['failed_message'], $verify_track_id, $verify_order_id )], $value['return'] ) );
         exit();
     } else {
         $wpdb->update( $wpdb->prefix . 'cf7_transactions',
             array(
                 'status'   => 'completed',
                 'track_id' => $verify_track_id,
+                'log'  => 'result => <pre>'. print_r($result, true) . '</pre>',
             ),
             array( 'trans_id' => $verify_id ),
             array(
+                '%s',
                 '%s',
                 '%s',
             ),
             array( '%d' )
         );
 
-        Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=success&message=' . filled_message( $value['success_message'], $verify_track_id, $verify_order_id ) ) );
+        wp_redirect( add_query_arg( ['status' => 'success', 'message' => filled_message( $value['success_message'], $verify_track_id, $verify_order_id )], $value['return'] ) );
         exit();
     }
 } else {
-    Header( 'Location: ' . esc_url_raw( $value['return'] . '?status=failed&message=' . __( 'Transaction not found', 'idpay-contact-form-7' ) ) );
+    wp_redirect( add_query_arg( ['status' => 'failed', 'message' => __( 'Transaction not found', 'idpay-contact-form-7' )], $value['return'] ) );
     exit();
 }

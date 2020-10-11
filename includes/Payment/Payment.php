@@ -101,8 +101,14 @@ class Payment implements ServiceInterface {
 		$amount  = intval( $amount );
 		$desc    = $description;
 
+        if ( empty( $api_key ) ) {
+            wp_redirect( add_query_arg( 'idpay_error', __( 'IDPay should be configured properly', 'idpay-contact-form-7' )) );
+            exit;
+        }
+
 		if ( empty( $amount ) ) {
-			exit();
+            wp_redirect( add_query_arg( 'idpay_error', __( 'Amount can not be empty', 'idpay-contact-form-7' )) );
+            exit;
 		}
 
 		$data    = array(
@@ -131,7 +137,7 @@ class Payment implements ServiceInterface {
 			$row['status'] = 'failed';
 			$row['log'] = $error;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
-			Header( 'Location: ' . esc_url( $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error ) );
+            wp_redirect( add_query_arg( 'idpay_error', $error ) );
 			exit();
 		}
 
@@ -144,12 +150,12 @@ class Payment implements ServiceInterface {
 			$row['status'] = 'failed';
 			$row['log'] = $error;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
-			Header( 'Location: ' . esc_url( $_SERVER['HTTP_ORIGIN'] . $_SERVER['REDIRECT_URL'] . '?idpay_error='. $error ) );
+            wp_redirect( add_query_arg( 'idpay_error', $error ) );
 		}
 		else {
 			$row['trans_id'] = $result->id;
 			$wpdb->insert( $wpdb->prefix . "cf7_transactions", $row, $row_format );
-			Header( 'Location: ' . $result->link );
+            wp_redirect( $result->link );
 		}
 		exit();
 	}
