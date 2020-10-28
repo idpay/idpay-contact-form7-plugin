@@ -153,7 +153,7 @@ class Plugin {
                 $options['currency'] = 'rial';
                 update_option( "idpay_cf7_options", $options );
             }
-            update_option( 'idpay_cf7_version', '2.1.1' );
+            update_option( 'idpay_cf7_version', '2.1.3' );
 
             //handle the mistake from version 2.1.0
             if ( file_exists( ABSPATH . "wp-config.php" ) && is_writable( ABSPATH . "wp-config.php" ) ) {

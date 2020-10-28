@@ -1,7 +1,7 @@
 === IDPay for Contact Form 7 ===
 Contributors: JMDMahdi, imikiani, meysamrazmi, vispa
 Tags: IDPay, contact form 7, form, payment, contact form
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 Tested up to: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -32,6 +32,9 @@ Also there is a complete documentation [here](https://blog.idpay.ir/helps/103) w
 Thank you so much for using IDPay Payment Gateway.
 
 == Changelog ==
+
+= 2.1.3, October 11, 2020 =
+* check GET parameters if POST was empty in relation with IDPay webservices new update.
 
 = 2.1.2, August 5, 2020 =
 * change the callback url for permissions problems.
