@@ -1,5 +1,4 @@
 <?php
-require_once($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 
 /**
  * Shows a configured message when a payment is successful.
