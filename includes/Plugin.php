@@ -54,6 +54,7 @@ class Plugin
                 $sql = "CREATE TABLE $callback_table_name (
                id mediumint(11) NOT NULL AUTO_INCREMENT,
                 response TEXT NOT NULL,
+                message TEXT NULL,
                 created_at bigint(11) DEFAULT '0' NOT NULL,
                 PRIMARY KEY id (id)
             );";
