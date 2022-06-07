@@ -12,8 +12,8 @@ if ( isset( $_POST['update'] ) ) {
 	$options['api_key']         = sanitize_text_field( $_POST['api_key'] );
 	$options['return-page-id']  = ( intval( $_POST['return-page-id'] ) );
 	$options['return']          = get_page_link( intval( $_POST['return-page-id'] ) );
-	$options['success_message'] = wp_filter_post_kses( $_POST['success_message'] );
-	$options['failed_message']  = wp_filter_post_kses( $_POST['failed_message'] );
+	$options['success_message'] = sanitize_text_field( $_POST['success_message'] );
+	$options['failed_message']  = sanitize_text_field( $_POST['failed_message'] );
     $options['sandbox']         = !empty( $_POST['sandbox'] ) ? 1 : 0;
 	$options['currency']        = $_POST['currency'];
 
@@ -100,8 +100,7 @@ $checked         = $options['sandbox'] == 1 ? 'checked' : '';
                 <b><?php _e( 'Successful transaction message:', 'idpay-contact-form-7' ) ?></b>
             </td>
             <td>
-                <textarea name="success_message" rows="4" cols="50"
-                          dir="auto"> <?php esc_html_e( $success_message, 'idpay-contact-form-7' ) ?> </textarea>
+                <textarea name="success_message" rows="4" cols="50" dir="auto"><?php esc_html_e( $success_message, 'idpay-contact-form-7' ) ?></textarea>
                 <br>
                 <?php
                 esc_html_e( 'Enter the message you want to display to the customer after a successful payment. You can also choose these placeholders {track_id}, {order_id} for showing the order id and the tracking id respectively.', 'idpay-contact-form-7' );
@@ -113,8 +112,7 @@ $checked         = $options['sandbox'] == 1 ? 'checked' : '';
                 <b><?php _e( 'Unsuccessful transaction message:', 'idpay-contact-form-7' ) ?></b>
             </td>
             <td>
-                <textarea name="failed_message" rows="4" cols="50"
-                          dir="auto"> <?php esc_html_e( $failed_message, 'idpay-contact-form-7' ) ?> </textarea>
+                <textarea name="failed_message" rows="4" cols="50" dir="auto"><?php esc_html_e( $failed_message, 'idpay-contact-form-7' ) ?></textarea>
                 <br>
                 <?php
                 esc_html_e( 'Enter the message you want to display to the customer after a failure occurred in a payment. You can also choose these placeholders {track_id}, {order_id} for showing the order id and the tracking id respectively.', 'idpay-contact-form-7' );

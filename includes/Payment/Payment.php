@@ -76,7 +76,6 @@ class Payment implements ServiceInterface {
 		$row['trans_id']    = '';
 		$row['gateway']     = $active_gateway;
 		$row['amount']      = $value['currency'] == 'rial' ? $amount : $amount * 10;
-		$row['amount']      = $value['currency'] == 'rial' ? $amount : $amount * 10;
 		$row['phone']       = $phone;
 		$row['description'] = $description;
 		$row['email']       = $email;
