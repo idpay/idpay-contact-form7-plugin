@@ -52,7 +52,7 @@ class Plugin
 
             if ($wpdb->get_var("show tables like '$callback_table_name'") != $callback_table_name) {
                 $sql = "CREATE TABLE $callback_table_name (
-               id mediumint(11) NOT NULL AUTO_INCREMENT,
+               id bigint(11) NOT NULL AUTO_INCREMENT,
                 response TEXT NOT NULL,
                 message TEXT NULL,
                 created_at bigint(11) DEFAULT '0' NOT NULL,
