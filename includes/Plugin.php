@@ -166,6 +166,15 @@ class Plugin
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($sql);
 
+            $callback_table_name = $wpdb->prefix . "cf7_callbacks";
+            $sql = "CREATE TABLE $callback_table_name (
+               id bigint(11) NOT NULL AUTO_INCREMENT,
+                response TEXT NOT NULL,
+                message TEXT NULL,
+                created_at bigint(11) DEFAULT '0' NOT NULL,
+                PRIMARY KEY id (id)
+            );";
+            dbDelta($sql);
             //update options
             $options = get_option('idpay_cf7_options');
             if (empty($options['currency'])) {
