@@ -25,7 +25,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
                 $order_id,
                 $id,
                 $track_id,
-                $status,
+                'success',
                 filled_message( $value['success_message'], $row->track_id, $row->order_id ));
             // End of create callback log
             wp_redirect( add_query_arg([
@@ -59,7 +59,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
                 $order_id,
                 $id,
                 $track_id,
-                $status,
+                'failed',
                 filled_message( $value['failed_message'], $track_id, $order_id ));
         // End of create callback log
         wp_redirect( add_query_arg([
@@ -170,7 +170,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             $verify_order_id,
             $verify_id,
             $verify_track_id,
-            $verify_status,
+            'failed',
             filled_message( $value['failed_message'], $verify_track_id, $verify_order_id ));
         // End of create callback log
         wp_redirect( add_query_arg([
@@ -200,7 +200,7 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             $verify_order_id,
             $verify_id,
             $verify_track_id,
-            $verify_status,
+            'success',
             filled_message( $value['success_message'], $verify_track_id, $verify_order_id ));
         // End of create callback log
         wp_redirect( add_query_arg([
