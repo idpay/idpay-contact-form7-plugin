@@ -19,21 +19,17 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
     $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . $wpdb->prefix . "cf7_transactions WHERE trans_id='%s'", $id ) );
     if ( $row !== NULL ) {
         if ( $row->status == 'completed' ) {
-            // create callback log
+
             create_callback_response(
-                $wpdb,
-                $order_id,
-                $id,
-                $track_id,
-                'success',
-                filled_message( $value['success_message'], $row->track_id, $row->order_id ));
-            // End of create callback log
-            wp_redirect( add_query_arg([
-              //  'status' => 'success',
-            //    'message' => filled_message( $value['success_message'], $row->track_id, $row->order_id )
-                'order_id' => $id
-            ] , $value['return']
-            ));
+                                        $wpdb,
+                                        $order_id,
+                                        $id,
+                                        $track_id,
+                                        'success',
+                                        filled_message( $value['success_message'], $row->track_id, $row->order_id
+                                     ));
+
+            wp_redirect( add_query_arg([ 'order_id' => $id ] , $value['return'] ));
             exit();
         }
     }
@@ -53,20 +49,17 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             ),
             array( '%d' )
         );
-        // create callback log
-            create_callback_response(
-                $wpdb,
-                $order_id,
-                $id,
-                $track_id,
-                'failed',
-                filled_message( $value['failed_message'], $track_id, $order_id ));
-        // End of create callback log
-        wp_redirect( add_query_arg([
-           // 'status' => 'failed',
-          //  'message' => filled_message( $value['failed_message'], $track_id, $order_id )
-            'order_id' => $id
-        ], $value['return'] ) );
+
+               create_callback_response(
+                                        $wpdb,
+                                        $order_id,
+                                        $id,
+                                        $track_id,
+                                        'failed',
+                                        filled_message( $value['failed_message'], $track_id, $order_id
+                                        ));
+
+        wp_redirect( add_query_arg([ 'order_id' => $id ], $value['return'] ) );
         exit();
     }
 
@@ -164,20 +157,17 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             ),
             array( '%d' )
         );
-        // create callback log
-        create_callback_response(
-            $wpdb,
-            $verify_order_id,
-            $verify_id,
-            $verify_track_id,
-            'failed',
-            filled_message( $value['failed_message'], $verify_track_id, $verify_order_id ));
-        // End of create callback log
-        wp_redirect( add_query_arg([
-          //  'status' => 'failed',
-         //   'message' => filled_message( $value['failed_message'], $verify_track_id, $verify_order_id )
-            'order_id' => $id
-        ], $value['return'] ) );
+
+            create_callback_response(
+                                    $wpdb,
+                                    $verify_order_id,
+                                    $verify_id,
+                                    $verify_track_id,
+                                    'failed',
+                                    filled_message( $value['failed_message'], $verify_track_id, $verify_order_id
+                                    ));
+
+        wp_redirect( add_query_arg(['order_id' => $id], $value['return'] ) );
         exit();
     } else {
         $wpdb->update( $wpdb->prefix . 'cf7_transactions',
@@ -194,36 +184,30 @@ if ( ! empty( $id ) && ! empty( $order_id ) ) {
             ),
             array( '%d' )
         );
-        // create callback log THIS
+
         create_callback_response(
-            $wpdb,
-            $verify_order_id,
-            $verify_id,
-            $verify_track_id,
-            'success',
-            filled_message( $value['success_message'], $verify_track_id, $verify_order_id ));
-        // End of create callback log
-        wp_redirect( add_query_arg([
-          //  'status' => 'success',
-          //  'message' => filled_message( $value['success_message'], $verify_track_id, $verify_order_id )
-            'order_id' => $id
-        ], $value['return'] ) );
+                                    $wpdb,
+                                    $verify_order_id,
+                                    $verify_id,
+                                    $verify_track_id,
+                                    'success',
+                                    filled_message( $value['success_message'], $verify_track_id, $verify_order_id
+                                 ));
+
+        wp_redirect( add_query_arg([ 'order_id' => $id], $value['return'] ) );
         exit();
     }
 } else {
-    // create callback log
+
     create_callback_response(
-        $wpdb,
-        'No',
-        null,
-        null,
-        'failed',
-        __( 'Transaction not found', 'idpay-contact-form-7' ));
-    // End of create callback log
-    wp_redirect( add_query_arg( [
-        'order_id' => 'No'
-       // 'status' => 'failed',
-      //  'message' => __( 'Transaction not found', 'idpay-contact-form-7' )
-    ], $value['return'] ) );
+                                $wpdb,
+                                'No',
+                                null,
+                                null,
+                                'failed',
+                                __( 'Transaction not found', 'idpay-contact-form-7' )
+                            );
+
+    wp_redirect( add_query_arg( ['order_id' => 'No'], $value['return'] ) );
     exit();
 }
