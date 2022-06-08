@@ -20,7 +20,16 @@ function filled_message( $message, $track_id, $order_id ) {
     ], $message );
 }
 
-function create_callback_response($db,$order_id,$trans_id,$track_id,$status,$message)
+/**
+ * @param $db
+ * @param $order_id
+ * @param $trans_id
+ * @param $track_id
+ * @param $status
+ * @param $message
+ * @return void
+ */
+function create_callback_response($db, $order_id, $trans_id, $track_id, $status, $message)
 {    $tableName = 'cf7_callbacks';
     $row = $db->get_row( $db->prepare( "SELECT * FROM " . $db->prefix . $tableName ." WHERE id='%s'", $order_id ) );
     if ( $row == NULL ) {
@@ -52,6 +61,20 @@ function create_callback_response($db,$order_id,$trans_id,$track_id,$status,$mes
             array( '%d' )
         );
     }
+}
+
+/**
+ * @param $db
+ * @param $order_id
+ * @return void
+ */
+function fetch_callback_response($db, $order_id)
+{
+    xdebug_var_dump($db,$order_id);
+    die(0);
+
+    $color = $_GET['status'] == 'failed' ? '#f44336' : '#8BC34A';
+    return '<b style="color:'. $color .';text-align:center;display: block;">' . $_GET['message'] . '</b>';
 }
 
 /**

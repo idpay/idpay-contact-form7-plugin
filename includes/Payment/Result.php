@@ -35,9 +35,10 @@ class Result implements ServiceInterface {
      * @return string
      */
     public function handler( $atts ) {
-        if( !empty( $_GET['status'] ) && !empty( $_GET['message'] ) ){
-            $color = $_GET['status'] == 'failed' ? '#f44336' : '#8BC34A';
-            return '<b style="color:'. $color .';text-align:center;display: block;">' . $_GET['message'] . '</b>';
+        if(!empty( $_GET['order_id'])) {
+            require_once( dirname(__DIR__) . '/Functions.php' );
+            global $wpdb;
+            return fetch_callback_response($wpdb, $_GET['order_id']);
         }
         return '<b>'. _e( 'Transaction not found', 'idpay-contact-form-7' ) .'</b>';
     }
