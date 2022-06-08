@@ -76,10 +76,9 @@ function fetch_callback_response($db, $order_id)
         return '<b>'. _e( 'Transaction not found', 'idpay-contact-form-7' ) .'</b>';
     }
     else {
-        xdebug_var_dump($row,$order_id);
-        die(0);
-        $color = $_GET['status'] == 'failed' ? '#f44336' : '#8BC34A';
-        return '<b style="color:'. $color .';text-align:center;display: block;">' . $_GET['message'] . '</b>';
+        $response = json_decode($row->response);
+        $color = $response->status == 'failed' ? '#f44336' : '#8BC34A';
+        return '<b style="color:'. $color .';text-align:center;display: block;">' .  $row->message . '</b>';
     }
 }
 

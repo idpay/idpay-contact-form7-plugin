@@ -164,7 +164,7 @@ if ( ! empty( $trans_id ) && ! empty( $order_id ) ) {
 
     $status = 'failed' ;
     $message  = __( 'Transaction not found', 'idpay-contact-form-7' ) ;
-    create_callback_response( $wpdb, null, null,null,$status,$message);
+    create_callback_response( $wpdb, time(), null,null,$status,$message);
 
     wp_redirect( add_query_arg([], $value['return'] ) );
     exit();
