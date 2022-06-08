@@ -43,7 +43,7 @@ function create_callback_response($db, $order_id, $trans_id, $track_id, $status,
             'message' => json_encode($message),
             'created_at' => time(),
         ];
-        $db->insert( $db->prefix . $tableName, $row, array('%d','%s','%s','%s') );
+        $db->insert( $db->prefix . $tableName, $row, array('%s','%s','%s','%s') );
     }
     else {
         $db->update( $db->prefix . $tableName,
@@ -58,7 +58,7 @@ function create_callback_response($db, $order_id, $trans_id, $track_id, $status,
             ),
             array( 'id' => $order_id ),
             array('%s','%s','%s'),
-            array( '%d' )
+            array( '%s' )
         );
     }
 }
@@ -78,13 +78,9 @@ function fetch_callback_response($db, $order_id)
     else {
         xdebug_var_dump($row,$order_id);
         die(0);
+        $color = $_GET['status'] == 'failed' ? '#f44336' : '#8BC34A';
+        return '<b style="color:'. $color .';text-align:center;display: block;">' . $_GET['message'] . '</b>';
     }
-
-    //xdebug_var_dump($db,$order_id);
-    //die(0);
-
-    $color = $_GET['status'] == 'failed' ? '#f44336' : '#8BC34A';
-    return '<b style="color:'. $color .';text-align:center;display: block;">' . $_GET['message'] . '</b>';
 }
 
 /**
