@@ -18,12 +18,14 @@ use IDPay\CF7\Payment\Result;
  *
  * @package IDPay\CF7.
  */
-class Init {
+class Init
+{
 
-    public static function call_services() {
-        foreach ( self::discover() as $class ) {
+    public static function call_services()
+    {
+        foreach (self::discover() as $class) {
             /** @var \IDPay\CF7\ServiceInterface $service */
-            $service = self::instantiate( $class );
+            $service = self::instantiate($class);
             $service->register();
         }
     }
@@ -33,7 +35,8 @@ class Init {
      *
      * @return array
      */
-    private static function discover() {
+    private static function discover()
+    {
         return array(
             AdditionalSettingsForm::class,
             Result::class,
@@ -51,7 +54,8 @@ class Init {
      * @return \IDPay\CF7\ServiceInterface
      */
 
-    private static function instantiate( $class ) {
+    private static function instantiate($class)
+    {
         /** @var \IDPay\CF7\ServiceInterface $service */
         $service = new $class();
         return $service;

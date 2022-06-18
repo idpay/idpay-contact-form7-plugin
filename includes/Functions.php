@@ -5,19 +5,20 @@
  * Also note that the message will be shown
  * if the short code has been inserted in a page.
  *
- * @see \IDPay\CF7\Admin\Menu::admin_table()
- *
  * @param $message
  * @param $track_id
  * @param $order_id
  *
  * @return string
+ * @see \IDPay\CF7\Admin\Menu::admin_table()
+ *
  */
-function filled_message( $message, $track_id, $order_id ) {
-    return str_replace( [ "{track_id}", "{order_id}" ], [
+function filled_message($message, $track_id, $order_id)
+{
+    return str_replace(["{track_id}", "{order_id}"], [
         $track_id,
         $order_id,
-    ], $message );
+    ], $message);
 }
 
 /**
@@ -29,36 +30,29 @@ function filled_message( $message, $track_id, $order_id ) {
  * @param $message
  * @return void
  */
-function create_callback_response($db, $order_id, $trans_id, $track_id, $status, $message)
-{    $tableName = 'cf7_callbacks';
-    $row = $db->get_row( $db->prepare( "SELECT * FROM " . $db->prefix . $tableName ." WHERE id='%s'", $order_id ) );
-    if ( $row == NULL ) {
+function create_callback_response($order_id, $status, $message)
+{
+    global $wpdb;
+    $tableName = 'cf7_callbacks';
+    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $tableName . " WHERE id='%s'", $order_id));
+    if ($row == NULL) {
         $row = [
             'id' => $order_id,
-            'response' => json_encode([
-                'trans_id'=>$trans_id,
-                'track_id'=>$track_id,
-                'status'=>$status
-            ]),
-            'message' => json_encode($message),
+            'response' => json_encode(['status' => $status]),
+            'message' => $message,
             'created_at' => time(),
         ];
-        $db->insert( $db->prefix . $tableName, $row, array('%s','%s','%s','%s') );
-    }
-    else {
-        $db->update( $db->prefix . $tableName,
+        $wpdb->insert($wpdb->prefix . $tableName, $row, array('%s', '%s', '%s', '%s'));
+    } else {
+        $wpdb->update($wpdb->prefix . $tableName,
             array(
-                'response' => json_encode([
-                    'trans_id'=>$trans_id,
-                    'track_id'=>$track_id,
-                    'status'=>$status
-                ]),
-                'message' => json_encode($message),
+                'response' => json_encode(['status' => $status]),
+                'message' => $message,
                 'created_at' => time(),
             ),
-            array( 'id' => $order_id ),
-            array('%s','%s','%s'),
-            array( '%s' )
+            array('id' => $order_id),
+            array('%s', '%s', '%s'),
+            array('%s')
         );
     }
 }
@@ -68,17 +62,17 @@ function create_callback_response($db, $order_id, $trans_id, $track_id, $status,
  * @param $order_id
  * @return string
  */
-function fetch_callback_response($db, $order_id)
+function fetch_callback_response($order_id)
 {
+    global $wpdb;
     $tableName = 'cf7_callbacks';
-    $row = $db->get_row( $db->prepare( "SELECT * FROM " . $db->prefix . $tableName ." WHERE id='%s'", $order_id ) );
-    if ( $row == NULL ) {
-        return '<b>'. _e( 'Transaction not found', 'idpay-contact-form-7' ) .'</b>';
-    }
-    else {
+    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $tableName . " WHERE id='%s'", $order_id));
+    if ($row == NULL) {
+        return '<b>' . _e('Transaction not found', 'idpay-contact-form-7') . '</b>';
+    } else {
         $response = json_decode($row->response);
         $color = $response->status == 'failed' ? '#f44336' : '#8BC34A';
-        return '<b style="color:'. $color .';text-align:center;display: block;">' .  $row->message . '</b>';
+        return '<b style="color:' . $color . ';text-align:center;display: block;">' . $row->message . '</b>';
     }
 }
 
@@ -92,12 +86,13 @@ function fetch_callback_response($db, $order_id)
  *
  * @return array|\WP_Error
  */
-function call_gateway_endpoint( $url, $args ) {
+function call_gateway_endpoint($url, $args)
+{
     $number_of_connection_tries = 4;
-    while ( $number_of_connection_tries ) {
-        $response = wp_safe_remote_post( $url, $args );
-        if ( is_wp_error( $response ) ) {
-            $number_of_connection_tries --;
+    while ($number_of_connection_tries) {
+        $response = wp_safe_remote_post($url, $args);
+        if (is_wp_error($response)) {
+            $number_of_connection_tries--;
             continue;
         } else {
             break;
