@@ -35,6 +35,7 @@ class Payment implements ServiceInterface
      */
     public function after_send_mail($cf7)
     {
+        require_once(dirname(__DIR__) . '/Functions.php');
         global $wpdb;
         global $postid;
         $postid = $cf7->id();
@@ -104,12 +105,20 @@ class Payment implements ServiceInterface
         $desc = $description;
 
         if (empty($api_key)) {
-            wp_redirect(add_query_arg('idpay_error', __('IDPay should be configured properly', 'idpay-contact-form-7')));
+            $temp_order_id = time();
+            $status = 'failed';
+            $message = __('IDPay should be configured properly', 'idpay-contact-form-7');
+            create_callback_response($temp_order_id, $status, $message);
+            wp_redirect(add_query_arg(['order_id' => $temp_order_id], get_page_link(intval($options['return-page-id']))));
             exit;
         }
 
         if (empty($amount)) {
-            wp_redirect(add_query_arg('idpay_error', __('Amount can not be empty', 'idpay-contact-form-7')));
+            $temp_order_id = time();
+            $status = 'failed';
+            $message = __('Amount can not be empty', 'idpay-contact-form-7');
+            create_callback_response($temp_order_id, $status, $message);
+            wp_redirect(add_query_arg(['order_id' => $temp_order_id], get_page_link(intval($options['return-page-id']))));
             exit;
         }
 
@@ -133,13 +142,17 @@ class Payment implements ServiceInterface
             'timeout' => 15,
         );
 
-        $response = $this->call_gateway_endpoint('https://api.idpay.ir/v1.1/payment', $args);
+        $response = call_gateway_endpoint('https://api.idpay.ir/v1.1/payment', $args);
         if (is_wp_error($response)) {
             $error = $response->get_error_message();
             $row['status'] = 'failed';
             $row['log'] = $error;
             $wpdb->insert($wpdb->prefix . "cf7_transactions", $row, $row_format);
-            wp_redirect(add_query_arg('idpay_error', $error));
+            $order_id = $data['order_id'];
+            $status = 'failed';
+            $message = $error;
+            create_callback_response($order_id, $status, $message);
+            wp_redirect(add_query_arg(['order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
             exit();
         }
 
@@ -152,37 +165,21 @@ class Payment implements ServiceInterface
             $row['status'] = 'failed';
             $row['log'] = $error;
             $wpdb->insert($wpdb->prefix . "cf7_transactions", $row, $row_format);
-            wp_redirect(add_query_arg('idpay_error', $error));
+            $order_id = $data['order_id'];
+            $status = 'failed';
+            $message = $error;
+            create_callback_response($order_id, $status, $message);
+            wp_redirect(add_query_arg(['order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
+
         } else {
             $row['trans_id'] = $result->id;
             $wpdb->insert($wpdb->prefix . "cf7_transactions", $row, $row_format);
+            $order_id = $data['order_id'];
+            $status = 'Redirected';
+            $message = 'Redirect To IPG';
+            create_callback_response($order_id, $status, $message);
             wp_redirect($result->link);
         }
         exit();
-    }
-
-    /**
-     * Calls the gateway endpoints.
-     *
-     * Tries to get response from the gateway for 4 times.
-     *
-     * @param $url
-     * @param $args
-     *
-     * @return array|\WP_Error
-     */
-    private function call_gateway_endpoint($url, $args)
-    {
-        $number_of_connection_tries = 4;
-        while ($number_of_connection_tries) {
-            $response = wp_safe_remote_post($url, $args);
-            if (is_wp_error($response)) {
-                $number_of_connection_tries--;
-                continue;
-            } else {
-                break;
-            }
-        }
-        return $response;
     }
 }

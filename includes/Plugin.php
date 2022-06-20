@@ -52,12 +52,12 @@ class Plugin
 
             if ($wpdb->get_var("show tables like '$callback_table_name'") != $callback_table_name) {
                 $sql = "CREATE TABLE $callback_table_name (
-               id bigint(11) NOT NULL AUTO_INCREMENT,
-                response TEXT NOT NULL,
-                message TEXT NULL,
-                created_at bigint(11) DEFAULT '0' NOT NULL,
-                PRIMARY KEY id (id)
-            );";
+                        id bigint(11) NOT NULL AUTO_INCREMENT,
+                        response TEXT NOT NULL,
+                        message TEXT NULL,
+                        created_at bigint(11) DEFAULT '0' NOT NULL,
+                        PRIMARY KEY id (id)
+                 );";
                 dbDelta($sql);
             }
 
@@ -202,8 +202,7 @@ class Plugin
                 }
             }
         }
-        if(version_compare($version, '2.2.0') < 0)
-        {
+        if (version_compare($version, '2.1.4') < 0) {
             $callback_table_name = $wpdb->prefix . "cf7_callbacks";
             $sql = "CREATE TABLE $callback_table_name (
                id bigint(11) NOT NULL AUTO_INCREMENT,

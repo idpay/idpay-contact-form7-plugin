@@ -34,8 +34,8 @@ Thank you so much for using IDPay Payment Gateway.
 == Changelog ==
 
 = 2.2.0, June 13, 2022 =
-	* Improve sanitizing
-	* Change redirecting behavior after payment
+* Improve sanitizing
+* Change redirecting behavior after payment
 
 = 2.1.4, April 4, 2020 =
 * delete unnecessary line of code which could throw error in some installation.
