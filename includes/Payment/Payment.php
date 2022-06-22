@@ -105,20 +105,20 @@ class Payment implements ServiceInterface
         $desc = $description;
 
         if (empty($api_key)) {
-            $temp_order_id = time();
+            $order_id = time();
             $status = 'failed';
             $message = __('IDPay should be configured properly', 'idpay-contact-form-7');
-            create_callback_response($temp_order_id, $status, $message);
-            wp_redirect(add_query_arg(['order_id' => $temp_order_id], get_page_link(intval($options['return-page-id']))));
+            create_callback_response($order_id, $status, $message);
+            wp_redirect(add_query_arg(['idpay_cf7_order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
             exit;
         }
 
         if (empty($amount)) {
-            $temp_order_id = time();
+            $order_id = time();
             $status = 'failed';
             $message = __('Amount can not be empty', 'idpay-contact-form-7');
-            create_callback_response($temp_order_id, $status, $message);
-            wp_redirect(add_query_arg(['order_id' => $temp_order_id], get_page_link(intval($options['return-page-id']))));
+            create_callback_response($order_id, $status, $message);
+            wp_redirect(add_query_arg(['idpay_cf7_order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
             exit;
         }
 
@@ -152,7 +152,7 @@ class Payment implements ServiceInterface
             $status = 'failed';
             $message = $error;
             create_callback_response($order_id, $status, $message);
-            wp_redirect(add_query_arg(['order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
+            wp_redirect(add_query_arg(['idpay_cf7_order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
             exit();
         }
 
@@ -169,7 +169,7 @@ class Payment implements ServiceInterface
             $status = 'failed';
             $message = $error;
             create_callback_response($order_id, $status, $message);
-            wp_redirect(add_query_arg(['order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
+            wp_redirect(add_query_arg(['idpay_cf7_order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
 
         } else {
             $row['trans_id'] = $result->id;

@@ -7,13 +7,13 @@
  *
  * @param $message
  * @param $track_id
- * @param $idpay_order_id
+ * @param $order_id
  *
  * @return string
  * @see \IDPay\CF7\Admin\Menu::admin_table()
  *
  */
-function filled_message($message, $track_id, $idpay_order_id)
+function filled_message($message, $track_id, $order_id)
 {
     return str_replace(["{track_id}", "{idpay_order_id}"], [
         $track_id,
@@ -23,21 +23,21 @@ function filled_message($message, $track_id, $idpay_order_id)
 
 /**
  * @param $db
- * @param $idpay_order_id
+ * @param $order_id
  * @param $trans_id
  * @param $track_id
  * @param $status
  * @param $message
  * @return void
  */
-function create_callback_response($idpay_order_id, $status, $message)
+function create_callback_response($order_id, $status, $message)
 {
     global $wpdb;
     $tableName = 'cf7_callbacks';
-    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $tableName . " WHERE id='%s'", $idpay_order_id));
+    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $tableName . " WHERE id='%s'", $order_id));
     if ($row == NULL) {
         $row = [
-            'id' => $idpay_order_id,
+            'id' => $order_id,
             'response' => $status,
             'message' => $message,
             'created_at' => time(),
@@ -50,7 +50,7 @@ function create_callback_response($idpay_order_id, $status, $message)
                 'message' => $message,
                 'created_at' => time(),
             ),
-            array('id' => $idpay_order_id),
+            array('id' => $order_id),
             array('%s', '%s', '%s'),
             array('%s')
         );
@@ -59,14 +59,14 @@ function create_callback_response($idpay_order_id, $status, $message)
 
 /**
  * @param $db
- * @param $idpay_order_id
+ * @param $order_id
  * @return string
  */
-function fetch_callback_response($idpay_order_id)
+function fetch_callback_response($order_id)
 {
     global $wpdb;
     $tableName = 'cf7_callbacks';
-    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $tableName . " WHERE id='%s'", $idpay_order_id));
+    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $tableName . " WHERE id='%s'", $order_id));
     if ($row == NULL) {
         return '<b>' . _e('Transaction not found', 'idpay-contact-form-7') . '</b>';
     } else {

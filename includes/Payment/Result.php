@@ -38,9 +38,9 @@ class Result implements ServiceInterface
      */
     public function handler($atts)
     {
-        if (!empty($_GET['order_id'])) {
+        if (!empty($_GET['idpay_cf7_order_id'])) {
             require_once(dirname(__DIR__) . '/Functions.php');
-            return fetch_callback_response($_GET['order_id']);
+            return fetch_callback_response($_GET['idpay_cf7_order_id']);
         }
         return '<b>' . _e('Transaction not found', 'idpay-contact-form-7') . '</b>';
     }
