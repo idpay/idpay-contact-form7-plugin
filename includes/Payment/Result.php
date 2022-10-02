@@ -17,13 +17,15 @@ use IDPay\CF7\ServiceInterface;
  *
  * @package IDPay\CF7\Payment
  */
-class Result implements ServiceInterface {
+class Result implements ServiceInterface
+{
 
     /**
      * {@inheritdoc}
      */
-    public function register() {
-        add_shortcode( 'idpay_cf7_result', array( $this, 'handler' ) );
+    public function register()
+    {
+        add_shortcode('idpay_cf7_result', array($this, 'handler'));
     }
 
     /**
@@ -34,11 +36,12 @@ class Result implements ServiceInterface {
      *
      * @return string
      */
-    public function handler( $atts ) {
-        if( !empty( $_GET['status'] ) && !empty( $_GET['message'] ) ){
-            $color = $_GET['status'] == 'failed' ? '#f44336' : '#8BC34A';
-            return '<b style="color:'. $color .';text-align:center;display: block;">' . $_GET['message'] . '</b>';
+    public function handler($atts)
+    {
+        if (!empty($_GET['idpay_cf7_order_id'])) {
+            require_once(dirname(__DIR__) . '/Functions.php');
+            return fetch_callback_response($_GET['idpay_cf7_order_id']);
         }
-        return '<b>'. _e( 'Transaction not found', 'idpay-contact-form-7' ) .'</b>';
+        return '<b>' . _e('Transaction not found', 'idpay-contact-form-7') . '</b>';
     }
 }

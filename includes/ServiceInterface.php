@@ -17,7 +17,8 @@ namespace IDPay\CF7;
  *
  * @package IDPay\CF7
  */
-interface ServiceInterface {
+interface ServiceInterface
+{
 
     /**
      * A place for calling hooks.
