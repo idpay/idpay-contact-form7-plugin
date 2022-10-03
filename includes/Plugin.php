@@ -13,18 +13,6 @@ namespace IDPay\CF7;
  */
 class Plugin
 {
-
-    /**
-     * This is triggered when the plugin is going to be activated.
-     *
-     * Creates a table in database which stores all transactions.
-     *
-     * Also defines a variable in the 'wp-config.php' file so that
-     * any contact form does not load javascript files in order to disabling
-     * ajax capability of those form. This is happened so that we can redirect
-     * to the gateway for processing a payment. => define('WPCF7_LOAD_JS',
-     * false);
-     */
     public static function activate()
     {
         global $wpdb;
@@ -45,7 +33,10 @@ class Plugin
                 email VARCHAR(255) NULL,
                 created_at bigint(11) DEFAULT '0' NOT NULL,
                 status VARCHAR(255) NOT NULL,
+                log longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+                order_id bigint NOT NULL,
                 PRIMARY KEY id (id)
+                UNIQUE KEY wp_cf7_transactions_trans_id_uindex (trans_id)
             );";
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($sql);
@@ -202,7 +193,7 @@ class Plugin
                 }
             }
         }
-        if (version_compare($version, '2.1.4') < 0) {
+        if (version_compare($version, '2.1.5') < 0) {
             $callback_table_name = $wpdb->prefix . "cf7_callbacks";
             $sql = "CREATE TABLE $callback_table_name (
                id bigint(11) NOT NULL AUTO_INCREMENT,
@@ -213,6 +204,17 @@ class Plugin
             );";
             dbDelta($sql);
             update_option('idpay_cf7_version', '2.2.0');
+        }
+
+        if (version_compare($version, '2.2.1') < 0) {
+            $cf7_transactions = "{$wpdb->prefix}cf7_transactions";
+            $cf7_transactions_order_id_uindex = "{$wpdb->prefix}cf7_transactions_order_id_uindex";
+            $cf7_transactions_trans_id_uindex = "{$wpdb->prefix}cf7_transactions_trans_id_uindex";
+
+            $sql = "alter table {$cf7_transactions} add order_id bigint not null;
+                create unique index {$cf7_transactions_trans_id_uindex} on {$cf7_transactions} (trans_id);";
+            dbDelta($sql);
+            update_option('idpay_cf7_version', '2.3.0');
         }
     }
 
