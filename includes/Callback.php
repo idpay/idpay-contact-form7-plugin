@@ -16,10 +16,9 @@ foreach ($options as $k => $v) {
 
 if (!empty($trans_id) && !empty($order_id)) {
 
-    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . "cf7_transactions WHERE trans_id='%s'", $trans_id));
-    if ($row !== NULL) {
+    $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . "cf7_transactions WHERE order_id='%s'", $order_id));
+    if ($row !== NULL && isNotDoubleSpending($row,$order_id,$trans_id) == true) {
         if ($row->status == 'completed') {
-
             $status = 'success';
             $message = filled_message($value['success_message'], $row->track_id, $row->order_id);
             create_callback_response($order_id, $status, $message);
@@ -162,4 +161,13 @@ if (!empty($trans_id) && !empty($order_id)) {
     create_callback_response($order_id, $status, $message);
     wp_redirect(add_query_arg(['idpay_cf7_order_id' => $order_id], $value['return']));
     exit();
+}
+
+function isNotDoubleSpending($reference,$order_id, $transaction_id)
+{
+    $relatedTransaction = $reference->trans_id;
+    if(!empty($relatedTransaction)){
+        return $transaction_id == $relatedTransaction;
+    }
+    return  false;
 }

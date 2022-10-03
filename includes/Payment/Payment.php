@@ -97,6 +97,7 @@ class Payment implements ServiceInterface
             '%s',
             '%s',
             "%s",
+            "%s",
         );
 
         $api_key = $value['api_key'];
@@ -147,6 +148,7 @@ class Payment implements ServiceInterface
             $error = $response->get_error_message();
             $row['status'] = 'failed';
             $row['log'] = $error;
+            $row['order_id'] = $data['order_id'];
             $wpdb->insert($wpdb->prefix . "cf7_transactions", $row, $row_format);
             $order_id = $data['order_id'];
             $status = 'failed';
@@ -172,7 +174,9 @@ class Payment implements ServiceInterface
             wp_redirect(add_query_arg(['idpay_cf7_order_id' => $order_id], get_page_link(intval($options['return-page-id']))));
 
         } else {
+            // save Transaction ID to Order & Payment
             $row['trans_id'] = $result->id;
+            $row['order_id'] = $data['order_id'];
             $wpdb->insert($wpdb->prefix . "cf7_transactions", $row, $row_format);
             $order_id = $data['order_id'];
             $status = 'Redirected';

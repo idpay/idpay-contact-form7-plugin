@@ -1,7 +1,7 @@
 === IDPay for Contact Form 7 ===
-Contributors: JMDMahdi, imikiani, meysamrazmi, vispa, Mohammad-Malek
+Contributors: JMDMahdi, imikiani, meysamrazmi, vispa, MimDeveloper.Tv
 Tags: IDPay, contact form 7, form, payment, contact form
-Stable tag: 2.2.0
+Stable tag: 2.3.0
 Tested up to: 6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
