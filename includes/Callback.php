@@ -162,3 +162,12 @@ if (!empty($trans_id) && !empty($order_id)) {
     wp_redirect(add_query_arg(['idpay_cf7_order_id' => $order_id], $value['return']));
     exit();
 }
+
+function isNotDoubleSpending($reference,$order_id, $transaction_id)
+{
+    $relatedTransaction = $reference->trans_id;
+    if(!empty($relatedTransaction)){
+        return $transaction_id == $relatedTransaction;
+    }
+    return  false;
+}

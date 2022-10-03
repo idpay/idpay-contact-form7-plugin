@@ -17,7 +17,7 @@ function filled_message($message, $track_id, $order_id)
 {
     return str_replace(["{track_id}", "{idpay_order_id}"], [
         $track_id,
-        $idpay_order_id,
+        $order_id,
     ], $message);
 }
 
@@ -98,14 +98,5 @@ function call_gateway_endpoint($url, $args)
         }
     }
     return $response;
-}
-
-function isNotDoubleSpending($reference_id,$order_id, $transaction_id)
-{
-    $relatedTransaction = get_post_meta($reference_id, "IdpayTransactionId:$order_id", false)[0];
-    if(!empty($relatedTransaction)){
-        return $transaction_id == $relatedTransaction;
-    }
-    return  false;
 }
 

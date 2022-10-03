@@ -97,6 +97,7 @@ class Payment implements ServiceInterface
             '%s',
             '%s',
             "%s",
+            "%s",
         );
 
         $api_key = $value['api_key'];
@@ -145,11 +146,11 @@ class Payment implements ServiceInterface
         $response = call_gateway_endpoint('https://api.idpay.ir/v1.1/payment', $args);
         if (is_wp_error($response)) {
             $error = $response->get_error_message();
-            $order_id = $data['order_id'];
             $row['status'] = 'failed';
             $row['log'] = $error;
-            $row['order_id'] = $order_id;
+            $row['order_id'] = $data['order_id'];
             $wpdb->insert($wpdb->prefix . "cf7_transactions", $row, $row_format);
+            $order_id = $data['order_id'];
             $status = 'failed';
             $message = $error;
             create_callback_response($order_id, $status, $message);
@@ -175,6 +176,7 @@ class Payment implements ServiceInterface
         } else {
             // save Transaction ID to Order & Payment
             $row['trans_id'] = $result->id;
+            $row['order_id'] = $data['order_id'];
             $wpdb->insert($wpdb->prefix . "cf7_transactions", $row, $row_format);
             $order_id = $data['order_id'];
             $status = 'Redirected';

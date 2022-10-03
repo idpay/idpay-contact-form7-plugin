@@ -34,11 +34,15 @@ class Plugin
                 created_at bigint(11) DEFAULT '0' NOT NULL,
                 status VARCHAR(255) NOT NULL,
                 log longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
-                order_id bigint NOT NULL,
+                order_id VARCHAR(255) NOT NULL,
                 PRIMARY KEY id (id)
-                UNIQUE KEY wp_cf7_transactions_trans_id_uindex (trans_id)
             );";
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta($sql);
+
+            $cf7_transactions = "{$wpdb->prefix}cf7_transactions";
+            $cf7_transactions_trans_id_uindex = "{$wpdb->prefix}cf7_transactions_trans_id_uindex";
+            $sql = "create unique index {$cf7_transactions_trans_id_uindex} on {$cf7_transactions} (trans_id);";
             dbDelta($sql);
 
             if ($wpdb->get_var("show tables like '$callback_table_name'") != $callback_table_name) {
@@ -208,10 +212,9 @@ class Plugin
 
         if (version_compare($version, '2.2.1') < 0) {
             $cf7_transactions = "{$wpdb->prefix}cf7_transactions";
-            $cf7_transactions_order_id_uindex = "{$wpdb->prefix}cf7_transactions_order_id_uindex";
             $cf7_transactions_trans_id_uindex = "{$wpdb->prefix}cf7_transactions_trans_id_uindex";
 
-            $sql = "alter table {$cf7_transactions} add order_id bigint not null;
+            $sql = "alter table {$cf7_transactions} add order_id VARCHAR(255) NOT NULL;
                 create unique index {$cf7_transactions_trans_id_uindex} on {$cf7_transactions} (trans_id);";
             dbDelta($sql);
             update_option('idpay_cf7_version', '2.3.0');
