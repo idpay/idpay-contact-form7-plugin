@@ -33,9 +33,13 @@ Thank you so much for using IDPay Payment Gateway.
 
 == Changelog ==
 
-= 2.2.0, June 13, 2022 =
-* Improve sanitizing
-* Change redirecting behavior after payment
+= 2.3.1, June 18, 2022 =
+* First Official Release
+* Tested Up With Wordpress 6.0 And CF7 Plugin 5.5.6
+* Check Double Spending Correct
+* Check Does Not Xss Attack Correct
+* Improve Sanitizing
+* Change Redirecting Behavior After Payment
 
 = 2.1.4, April 4, 2020 =
 * delete unnecessary line of code which could throw error in some installation.
