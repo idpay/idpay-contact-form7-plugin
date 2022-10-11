@@ -242,7 +242,7 @@ class AdditionalSettingsForm implements ServiceInterface
         );
 
         if (!empty($_GET['idpay_error'])) {
-            echo '<div class="alert alert-error idpay-error">' . $_GET['idpay_error'] . '</div>';
+            echo '<div class="alert alert-error idpay-error">' . sanitize_text_field($_GET['idpay_error']) . '</div>';
             echo '<style>
                 .idpay-error{
                     color: #F44336;
@@ -271,7 +271,7 @@ class AdditionalSettingsForm implements ServiceInterface
         $name = $tag->name;
 
         $value = isset($_POST[$name])
-            ? trim(wp_unslash(strtr((string)$_POST[$name], "\n", " ")))
+            ? trim(wp_unslash(strtr((string)sanitize_text_field($_POST[$name]), "\n", " ")))
             : '';
 
         if ('' === $value) {

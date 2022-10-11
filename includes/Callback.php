@@ -1,11 +1,22 @@
 <?php
 require_once(dirname(__FILE__) . '/Functions.php');
 
+function sanitize($variable)
+{
+    return trim(strip_tags($variable));
+}
+
 $status = !empty($_POST['status']) ? $_POST['status'] : (!empty($_GET['status']) ? $_GET['status'] : NULL);
 $track_id = !empty($_POST['track_id']) ? $_POST['track_id'] : (!empty($_GET['track_id']) ? $_GET['track_id'] : NULL);
 $trans_id = !empty($_POST['id']) ? $_POST['id'] : (!empty($_GET['id']) ? $_GET['id'] : NULL);
 $order_id = !empty($_POST['order_id']) ? $_POST['order_id'] : (!empty($_GET['order_id']) ? $_GET['order_id'] : NULL);
-$params = !empty($_POST['id']) ? $_POST : $_GET;
+$params =  $_SERVER["REQUEST_METHOD"] == "POST" ? $_POST : $_GET;
+
+$status = sanitize($status);
+$track_id = sanitize($track_id);
+$trans_id = sanitize($trans_id);
+$order_id = sanitize($order_id);
+
 
 global $wpdb;
 $value = array();
