@@ -4,7 +4,7 @@ Plugin Name: IDPay for Contact Form 7
 Description: Integrates IDPay Payment Gateway with Contact Form 7
 Author: IDPay
 Author URI: https://idpay.ir/
-Version: 2.3.0
+Version: 2.3.2
 Text Domain: idpay-contact-form-7
 Domain Path: languages
 */
