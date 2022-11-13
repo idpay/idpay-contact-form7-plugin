@@ -1,23 +1,21 @@
-=== IDPay for Contact Form 7 ===
-Contributors: JMDMahdi, imikiani, meysamrazmi, vispa, MimDeveloper.Tv
+=== Title & Descriptions ===
+
+title : IDPay for WP Contact Form 7
 Tags: IDPay, contact form 7, form, payment, contact form
-Stable tag: 2.3.0
-Tested up to: 6.0
+Stable tag: 2.3.2
+Tested up to: 6.1
+Contributors: MimDeveloper.Tv (Mohammad-Malek), imikiani, meysamrazmi, vispa
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-IDPay payment gateway for Contact Form 7
-
 == Description ==
 
-After installing and enabling this plugin, you can create a custom form in which a customer can enter her arbitrary amount an pay through IDPay gateway. Or you can configure that form so that a predefined amount is payable.
-
+After installing and enabling this plugin, your customers can pay through IDPay gateway.
 For doing a transaction through IDPay gateway, you must have an API Key. You can obtain the API Key by going to your [dashboard](https://idpay.ir/dashboard/web-services) in your IDPay [account](https://idpay.ir/user).
 
 == Installation ==
 
-After creating a web service on https://idpay.ir and getting an API Key, follow this instruction:
-
+0. After creating a Web Service on https://idpay.ir and getting an API Key, follow this instruction:
 1. Go to Contact.
 2. Click on IDPay Configuration.
 3. Enter your API Key.
@@ -25,13 +23,12 @@ After creating a web service on https://idpay.ir and getting an API Key, follow 
 5. Then go to "IDPay payment" tab and Enable Payment through IDPay gateway for that form.
 6. If you would like your customer pay a fixed amount, Select the "Predefined amount" checkbox and enter that amount in to opened text field. Also we provide a custom field so that a customer can enter their arbitrary amount in the field. This field is: [payment idpay_amount].
 
-If you need to use this plugin in Test mode, Select the "Sandbox" checkbox.
-
-Also there is a complete documentation [here](https://blog.idpay.ir/helps/103) which helps you to install the plugin step by step.
-
-Thank you so much for using IDPay Payment Gateway.
+* If you need to use this plugin in Test mode, Select the "Sandbox" checkbox.
 
 == Changelog ==
+
+== 2.3.2, Nov 13, 2022 ==
+* Tested Up With Wordpress 6.1 And CF7 Plugin 5.5.6
 
 = 2.3.1, June 18, 2022 =
 * First Official Release
@@ -73,4 +70,4 @@ Thank you so much for using IDPay Payment Gateway.
 * redesign the plugin.
 
 = 1.0, November 12, 2018 =
-* First release.
+* Develope release.
